@@ -2407,10 +2407,13 @@ static __latent_entropy struct task_struct *copy_process(
 
 	copy_oom_score_adj(clone_flags, p);
 
+<<<<<<< HEAD
 #ifdef CONFIG_KDP_CRED
 	if (kdp_enable)
 		kdp_assign_pgd(p);
 #endif
+=======
+>>>>>>> a3d0ceee7160... mm, oom_adj: don't loop through tasks in __set_oom_adj when not necessary
 	return p;
 
 bad_fork_cancel_cgroup:
