@@ -973,6 +973,7 @@ static inline unsigned int VENUS_UV_SCANLINES(unsigned int color_fmt,
 	case COLOR_FMT_NV12_512:
 		alignment = 256;
 		break;
+	case COLOR_FMT_NV12_128:
 	case COLOR_FMT_NV12_BPP10_UBWC:
 	case COLOR_FMT_P010_UBWC:
 	case COLOR_FMT_P010:
