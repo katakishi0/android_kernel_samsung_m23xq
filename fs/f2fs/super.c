@@ -3985,12 +3985,12 @@ try_onemore:
 		if (f2fs_hw_is_readonly(sbi)) {
 			if (!is_set_ckpt_flags(sbi, CP_UMOUNT_FLAG)) {
 				err = -EROFS;
-				f2fs_err(sbi, KERN_ERR,
+				f2fs_msg(sb, KERN_ERR,
 					"Need to recover fsync data, but "
 					"write access unavailable");
 				goto free_meta;
 			}
-			f2fs_err(sbi, KERN_INFO, "write access "
+			f2fs_msg(sbi->sb, KERN_INFO, "write access "
 				"unavailable, skipping recovery");
 			goto reset_checkpoint;
 		}
