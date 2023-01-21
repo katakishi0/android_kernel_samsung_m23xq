@@ -1,6 +1,7 @@
 #define ITAG " [Evdev Booster] "
 #include <linux/input/input_booster.h>
 
+#include <linux/input/input_booster.h>
 #include <linux/input.h>
 #include <linux/module.h>
 #include <linux/init.h>
@@ -289,6 +290,8 @@ void input_booster(struct ib_event_data *ib_ev_data)
 #endif
 }
 
+extern int ib_notifier_unregister(struct notifier_block *nb);
+extern int ib_notifier_register(struct notifier_block *nb);
 static int __init ev_boost_init(void)
 {
 	pr_info(ITAG" Input Booster Module Init\n");

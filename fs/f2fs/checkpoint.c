@@ -681,7 +681,7 @@ int f2fs_recover_orphan_inodes(struct f2fs_sb_info *sbi)
 		return 0;
 
 	if (bdev_read_only(sbi->sb->s_bdev)) {
-		f2fs_msg(sbi->sb, KERN_INFO, "write access "
+		f2fs_err(sbi, KERN_INFO, "write access "
 			"unavailable, skipping orphan cleanup");
 		return 0;
 	}
