@@ -1138,6 +1138,7 @@ static struct inode *f2fs_alloc_inode(struct super_block *sb)
 	   it will be reinitialize after a reboot.*/
 	inode_set_iversion(&fi->vfs_inode, 1);
 	atomic_set(&fi->dirty_pages, 0);
+	atomic_set(&fi->i_compr_blocks, 0);
 	init_rwsem(&fi->i_sem);
 	spin_lock_init(&fi->i_size_lock);
 	INIT_LIST_HEAD(&fi->dirty_list);
@@ -2948,6 +2949,12 @@ static int sanity_check_raw_super(struct f2fs_sb_info *sbi,
 	size_t crc_offset = 0;
 	__u32 crc = 0;
 
+	if (le32_to_cpu(raw_super->magic) != F2FS_SUPER_MAGIC) {
+		f2fs_info(sbi, "Magic Mismatch, valid(0x%x) - read(0x%x)",
+			  F2FS_SUPER_MAGIC, le32_to_cpu(raw_super->magic));
+		return -EINVAL;
+	}
+
 	/* Check checksum_offset and crc in superblock */
 	if (__F2FS_HAS_FEATURE(raw_super, F2FS_FEATURE_SB_CHKSUM)) {
 		crc_offset = le32_to_cpu(raw_super->checksum_offset);
@@ -3985,13 +3992,10 @@ try_onemore:
 		if (f2fs_hw_is_readonly(sbi)) {
 			if (!is_set_ckpt_flags(sbi, CP_UMOUNT_FLAG)) {
 				err = -EROFS;
-				f2fs_err(sbi, KERN_ERR,
-					"Need to recover fsync data, but "
-					"write access unavailable");
+				f2fs_err(sbi, "Need to recover fsync data, but write access unavailable");
 				goto free_meta;
 			}
-			f2fs_err(sbi, KERN_INFO, "write access "
-				"unavailable, skipping recovery");
+			f2fs_info(sbi, "write access unavailable, skipping recovery");
 			goto reset_checkpoint;
 		}
 

@@ -30,6 +30,7 @@ config SENSORS_SX9360
 config SENSORS_SX9330
 	depends on I2C
 	tristate "SX9330 driver"
+	default n
 	help
 	  Say Y here if you use sx9330.
 	  This option enables grip sensors using
@@ -39,6 +40,7 @@ config SENSORS_SX9330
 config SENSORS_SX9330_SUB2
 	depends on I2C
 	tristate "SX9330_SUB2 driver"
+	default n
 	help
 	  Say Y here if you use sx9330_sub2.
 	  This option enables grip sensors using
@@ -177,7 +179,6 @@ config SENSORS_A96T365IF
 	bool "Choose A96T365IF"
 	default n
 	help
-	  Say Y here to enable A96T365IF sensor.
 
 config SENSORS_A96T3X6_UNSUPPORT_OTG
 	depends on I2C
