@@ -1229,6 +1229,13 @@ int sec_input_parse_dt(struct device *dev)
 	input_info(true, dev, "%s: Sysinput enabled %s\n",
 				__func__, pdata->enable_sysinput_enabled ? "ON" : "OFF");
 
+	pdata->support_rawdata_motion_aivf = of_property_read_bool(np, "sec,support_rawdata_motion_aivf");
+	input_info(true, dev, "%s: motion aivf %s\n",
+				__func__, pdata->support_rawdata_motion_aivf ? "ON" : "OFF");
+	pdata->support_rawdata_motion_palm = of_property_read_bool(np, "sec,support_rawdata_motion_palm");
+	input_info(true, dev, "%s: motion palm %s\n",
+				__func__, pdata->support_rawdata_motion_palm ? "ON" : "OFF");
+
 	if (of_property_read_u32_array(np, "sec,area-size", px_zone, 3)) {
 		input_info(true, dev, "Failed to get zone's size\n");
 		pdata->area_indicator = 48;

@@ -2418,17 +2418,18 @@ static irqreturn_t nvt_ts_work_func(int irq, void *data)
 */
 
 #if NVT_TOUCH_WDT_RECOVERY
-   /* ESD protect by WDT */
-   if (nvt_wdt_fw_recovery(point_data)) {
-       input_err(true, &ts->client->dev,"Recover for fw reset, %02X\n", point_data[1]);
-       nvt_update_firmware(ts->platdata->firmware_name);
-	   if (nvt_check_fw_reset_state(RESET_STATE_REK))
-		   input_err(true, &ts->client->dev, "%s: Check FW state failed after FW reset recovery\n", __func__);
-	   else
-		   nvt_ts_mode_restore(ts);
+	/* ESD protect by WDT */
+	if (nvt_wdt_fw_recovery(point_data)) {
+		pm_wakeup_event(&ts->input_dev->dev, 1000);
+		input_err(true, &ts->client->dev,"Recover for fw reset, %02X\n", point_data[1]);
+		nvt_update_firmware(ts->platdata->firmware_name);
+		if (nvt_check_fw_reset_state(RESET_STATE_REK))
+			input_err(true, &ts->client->dev, "%s: Check FW state failed after FW reset recovery\n", __func__);
+		else
+			nvt_ts_mode_restore(ts);
 
-       goto XFER_ERROR;
-   }
+		goto XFER_ERROR;
+	}
 #endif /* #if NVT_TOUCH_WDT_RECOVERY */
 
 	/* ESD protect by FW handshake */
@@ -3728,10 +3729,15 @@ int32_t nvt_ts_resume(struct device *dev)
 	ts->ed_reset_flag = false;
 
 	if (ts->ear_detect_mode) {
-		if (set_ear_detect(ts, ts->ear_detect_mode, false)) {
-			input_err(true, &ts->client->dev, "%s : Fail to set set_ear_detect\n", __func__);
+		set_ear_detect(ts, ts->ear_detect_mode, false);
+	} else {
+		if (ts->ed_reset_flag) {
+			input_info(true, &ts->client->dev, "%s : set ed on & off\n", __func__);
+			set_ear_detect(ts, 1, false);
+			set_ear_detect(ts, 0, false);
 		}
 	}
+	ts->ed_reset_flag = false;
 
 #if NVT_TOUCH_ESD_PROTECT
 	nvt_esd_check_enable(false);

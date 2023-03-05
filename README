@@ -1,14 +1,14 @@
-        Linux kernel release 4.19.x <http://kernel.org/>
+Linux kernel
+============
 
-These are the release notes for Linux version 4.  Read them carefully,
-as they tell you what this is all about, explain how to install the
-kernel, and what to do if something goes wrong. 
+There are several guides for kernel developers and users. These guides can
+be rendered in a number of formats, like HTML and PDF. Please read
+Documentation/admin-guide/README.rst first.
 
-WHAT IS LINUX?
+In order to build the documentation, use ``make htmldocs`` or
+``make pdfdocs``.  The formatted documentation can also be read online at:
 
-  Linux is a clone of the operating system Unix, written from scratch by
-  Linus Torvalds with assistance from a loosely-knit team of hackers across
-  the Net. It aims towards POSIX and Single UNIX Specification compliance.
+    https://www.kernel.org/doc/html/latest/
 
   It has all the features you would expect in a modern fully-fledged Unix,
   including true multitasking, virtual memory, shared libraries, demand

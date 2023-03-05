@@ -1,6 +1,5 @@
 #!/bin/bash
 
-export ARCH=arm64
 rm -rf out
 mkdir -p out
 

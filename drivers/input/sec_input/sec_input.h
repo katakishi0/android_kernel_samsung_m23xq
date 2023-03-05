@@ -704,6 +704,8 @@ struct sec_ts_plat_data {
 	bool unuse_dvdd_power;
 	bool chip_on_board;
 	bool enable_sysinput_enabled;
+	bool support_rawdata_motion_aivf;
+	bool support_rawdata_motion_palm;
 	bool not_support_io_ldo;
 	bool not_support_vdd;
 	bool sense_off_when_cover_closed;
