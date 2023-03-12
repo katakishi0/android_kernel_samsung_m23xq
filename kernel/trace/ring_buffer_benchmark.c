@@ -242,7 +242,6 @@ static void ring_buffer_producer(void)
 	 * Hammer the buffer for 10 secs (this may
 	 * make the system stall)
 	 */
-	trace_printk("Starting ring buffer hammer\n");
 	start_time = ktime_get();
 	timeout = ktime_add_ns(start_time, RUN_TIME * NSEC_PER_SEC);
 	do {
@@ -281,7 +280,6 @@ static void ring_buffer_producer(void)
 			cond_resched();
 #endif
 	} while (ktime_before(end_time, timeout) && !break_test());
-	trace_printk("End ring buffer hammer\n");
 
 	if (consumer) {
 		/* Init both completions here to avoid races */
@@ -298,73 +296,29 @@ static void ring_buffer_producer(void)
 
 	entries = ring_buffer_entries(buffer);
 	overruns = ring_buffer_overruns(buffer);
-
-	if (test_error)
-		trace_printk("ERROR!\n");
-
-	if (!disable_reader) {
-		if (consumer_fifo < 0)
-			trace_printk("Running Consumer at nice: %d\n",
-				     consumer_nice);
-		else
-			trace_printk("Running Consumer at SCHED_FIFO %d\n",
-				     consumer_fifo);
 	}
-	if (producer_fifo < 0)
-		trace_printk("Running Producer at nice: %d\n",
-			     producer_nice);
-	else
-		trace_printk("Running Producer at SCHED_FIFO %d\n",
-			     producer_fifo);
-
-	/* Let the user know that the test is running at low priority */
-	if (producer_fifo < 0 && consumer_fifo < 0 &&
-	    producer_nice == MAX_NICE && consumer_nice == MAX_NICE)
-		trace_printk("WARNING!!! This test is running at lowest priority.\n");
-
-	trace_printk("Time:     %lld (usecs)\n", time);
-	trace_printk("Overruns: %lld\n", overruns);
-	if (disable_reader)
-		trace_printk("Read:     (reader disabled)\n");
-	else
-		trace_printk("Read:     %ld  (by %s)\n", read,
-			read_events ? "events" : "pages");
-	trace_printk("Entries:  %lld\n", entries);
-	trace_printk("Total:    %lld\n", entries + overruns + read);
-	trace_printk("Missed:   %ld\n", missed);
-	trace_printk("Hit:      %ld\n", hit);
 
 	/* Convert time from usecs to millisecs */
 	do_div(time, USEC_PER_MSEC);
 	if (time)
 		hit /= (long)time;
-	else
-		trace_printk("TIME IS ZERO??\n");
-
-	trace_printk("Entries per millisec: %ld\n", hit);
 
 	if (hit) {
 		/* Calculate the average time in nanosecs */
 		avg = NSEC_PER_MSEC / hit;
-		trace_printk("%ld ns per entry\n", avg);
 	}
 
 	if (missed) {
 		if (time)
 			missed /= (long)time;
 
-		trace_printk("Total iterations per millisec: %ld\n",
-			     hit + missed);
-
 		/* it is possible that hit + missed will overflow and be zero */
 		if (!(hit + missed)) {
-			trace_printk("hit + missed overflowed and totalled zero!\n");
 			hit--; /* make it non zero */
 		}
 
 		/* Caculate the average time in nanosecs */
 		avg = NSEC_PER_MSEC / (hit + missed);
-		trace_printk("%ld ns per entry\n", avg);
 	}
 }
 
@@ -412,7 +366,6 @@ static int ring_buffer_producer_thread(void *arg)
 		if (break_test())
 			goto out_kill;
 
-		trace_printk("Sleeping for 10 secs\n");
 		set_current_state(TASK_INTERRUPTIBLE);
 		if (break_test())
 			goto out_kill;
