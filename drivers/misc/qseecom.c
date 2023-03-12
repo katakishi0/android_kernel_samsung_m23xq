@@ -2909,7 +2909,7 @@ static int qseecom_load_app(struct qseecom_dev_handle *data, void __user *argp)
 		ret = 0;
 	} else {
 		first_time = true;
-		pr_warn("App (%s) does'nt exist, loading apps for first time\n",
+		pr_warn("App (%s) doesn't exist, loading apps for first time\n",
 			(char *)(load_img_req.img_name));
 
 		ret = qseecom_vaddr_map(load_img_req.ifd_data_fd,
