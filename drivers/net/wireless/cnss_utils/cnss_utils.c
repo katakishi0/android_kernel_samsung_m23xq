@@ -423,6 +423,7 @@ static const struct file_operations cnss_utils_mac_fops = {
 	.llseek		= seq_lseek,
 };
 
+#ifdef CONFIG_DEBUG_FS
 static int cnss_utils_debugfs_create(struct cnss_utils_priv *priv)
 {
 	int ret = 0;
@@ -441,6 +442,7 @@ static int cnss_utils_debugfs_create(struct cnss_utils_priv *priv)
 out:
 	return ret;
 }
+#endif
 
 static int __init cnss_utils_init(void)
 {
