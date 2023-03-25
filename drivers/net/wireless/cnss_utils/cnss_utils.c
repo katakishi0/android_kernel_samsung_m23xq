@@ -456,7 +456,9 @@ static int __init cnss_utils_init(void)
 
 	mutex_init(&priv->unsafe_channel_list_lock);
 	spin_lock_init(&priv->dfs_nol_info_lock);
+	#ifdef CONFIG_DEBUG_FS
 	cnss_utils_debugfs_create(priv);
+	#endif
 	cnss_utils_priv = priv;
 
 	return 0;
