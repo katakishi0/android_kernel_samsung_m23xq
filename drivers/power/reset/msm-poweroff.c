@@ -197,7 +197,7 @@ void set_dload_mode(int on)
 	dload_mode_enabled = on;
 
 #ifdef CONFIG_SEC_DEBUG
-	pr_err("set_dload_mode <%d> ( %lx )\n", on, CALLER_ADDR0);
+	pr_dbg("set_dload_mode <%d> ( %lx )\n", on, CALLER_ADDR0);
 #endif
 }
 
