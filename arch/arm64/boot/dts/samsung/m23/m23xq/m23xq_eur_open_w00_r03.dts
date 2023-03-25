@@ -6284,6 +6284,7 @@
 				novatek,lcdid2-gpio = <0xffffffff 0x63 0x0>;
 				novatek,lcdid3-gpio = <0xffffffff 0x64 0x0>;
 				novatek,lcdid = <0x0 0x2>;
+				novatek,resume_lp_delay = <0 0 0 0 0 32 15>;	// LTPS, CSOT-sharp
 				novatek,lcdtype = <0x4bf240 0x0 0x4b7240>;
 				novatek,fw_name = "tsp_novatek/nt36672_m23xq_csot.bin", "", "tsp_novatek/nt36672_m23xq_tianma.bin";
 				novatek,fw_name_mp = "tsp_novatek/nt36672_m23xq_csot_mp.bin", "", "tsp_novatek/nt36672_m23xq_tianma_mp.bin";
