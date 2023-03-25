@@ -803,7 +803,6 @@ int trace_array_printk(struct trace_array *tr,
 		       unsigned long ip, const char *fmt, ...);
 int trace_array_printk_buf(struct ring_buffer *buffer,
 			   unsigned long ip, const char *fmt, ...);
-void trace_printk_seq(struct trace_seq *s);
 enum print_line_t print_trace_line(struct trace_iterator *iter);
 
 extern char trace_find_mark(unsigned long long duration);
@@ -1197,7 +1196,6 @@ extern int trace_get_user(struct trace_parser *parser, const char __user *ubuf,
 		C(HEX,			"hex"),			\
 		C(BIN,			"bin"),			\
 		C(BLOCK,		"block"),		\
-		C(PRINTK,		"trace_printk"),	\
 		C(ANNOTATE,		"annotate"),		\
 		C(USERSTACKTRACE,	"userstacktrace"),	\
 		C(SYM_USEROBJ,		"sym-userobj"),		\
@@ -1827,9 +1825,6 @@ extern const char *__stop___trace_bprintk_fmt[];
 extern const char *__start___tracepoint_str[];
 extern const char *__stop___tracepoint_str[];
 
-void trace_printk_control(bool enabled);
-void trace_printk_init_buffers(void);
-void trace_printk_start_comm(void);
 int trace_keep_overwrite(struct tracer *tracer, u32 mask, int set);
 int set_tracer_flag(struct trace_array *tr, unsigned int mask, int enabled);
 

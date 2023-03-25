@@ -670,7 +670,6 @@ asmlinkage __visible void __init start_kernel(void)
 #endif
 	ftrace_init();
 
-	/* trace_printk can be enabled here */
 	early_trace_init();
 
 	/*

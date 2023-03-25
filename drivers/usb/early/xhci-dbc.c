@@ -30,7 +30,7 @@ static struct xdbc_state xdbc;
 static bool early_console_keep;
 
 #ifdef XDBC_TRACE
-#define	xdbc_trace	trace_printk
+#define	xdbc_trace
 #else
 static inline void xdbc_trace(const char *fmt, ...) { }
 #endif /* XDBC_TRACE */
