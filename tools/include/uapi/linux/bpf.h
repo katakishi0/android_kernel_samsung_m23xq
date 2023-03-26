@@ -2149,7 +2149,6 @@ union bpf_attr {
 	FN(map_delete_elem),		\
 	FN(probe_read),			\
 	FN(ktime_get_ns),		\
-	FN(trace_printk),		\
 	FN(get_prandom_u32),		\
 	FN(get_smp_processor_id),	\
 	FN(skb_store_bytes),		\
