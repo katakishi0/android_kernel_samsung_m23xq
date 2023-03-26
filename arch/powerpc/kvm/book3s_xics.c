@@ -29,7 +29,7 @@
 #if 1
 #define XICS_DBG(fmt...) do { } while (0)
 #else
-#define XICS_DBG(fmt...)
+#define XICS_DBG(fmt...) trace_printk(fmt)
 #endif
 
 #define ENABLE_REALMODE	true

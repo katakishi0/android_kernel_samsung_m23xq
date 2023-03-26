@@ -323,6 +323,7 @@ static int ion_rbin_heap_prereclaim(void *data)
 	while (true) {
 		wait_event_freezable(rbin_heap->waitqueue, rbin_heap->task_run);
 		jiffies_bstop = jiffies + (HZ / 10);
+		trace_printk("%s\n", "start");
 		total_size = 0;
 		last_size = size;
 		while (true) {
@@ -343,6 +344,7 @@ static int ion_rbin_heap_prereclaim(void *data)
 			total_size += page_private(page);
 			atomic_add(1 << order, &rbin_pool_pages);
 		}
+		trace_printk("end %lu\n", total_size);
 		rbin_heap->task_run = 0;
 	}
 	return 0;
@@ -357,6 +359,7 @@ static int ion_rbin_heap_shrink(void *data)
 
 	while (true) {
 		wait_event_freezable(rbin_heap->waitqueue, rbin_heap->shrink_run);
+		trace_printk("%s\n", "start");
 		total_size = 0;
 		while (true) {
 			page = alloc_rbin_page_from_pool(rbin_heap, size);
@@ -365,6 +368,7 @@ static int ion_rbin_heap_shrink(void *data)
 			ion_rbin_free(page_to_phys(page), page_private(page));
 			total_size += page_private(page);
 		}
+		trace_printk("%lu\n", total_size);
 		rbin_heap->shrink_run = 0;
 	}
 	return 0;
