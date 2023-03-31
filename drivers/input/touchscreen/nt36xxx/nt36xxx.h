@@ -56,6 +56,8 @@ struct nvt_ts_data {
 	struct delayed_work nvt_fwu_work;
 	uint16_t addr;
 	int8_t phys[32];
+	struct workqueue_struct *coord_workqueue;
+	struct work_struct irq_work;
 	const struct i2c_device_id *id;
 	struct notifier_block fb_notif;
 	uint8_t fw_ver;
