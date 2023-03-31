@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0-only
 /*
- * Copyright (C) 2010 - 2018 Novatek, Inc.
+ * Copyright (C) 2010 - 2023 Novatek, Inc.
  *
  * $Revision: 47247 $
  * $Date: 2019-07-10 10:41:36 +0800 (Wed, 10 Jul 2019) $
@@ -140,7 +140,7 @@ static void nvt_irq_enable(bool enable)
  * return:
  *     Executive outcomes. 2---succeed. -5---I/O error
  *******************************************************/
-int32_t CTP_I2C_READ(struct i2c_client *client, uint16_t address, uint8_t *buf,
+inline int32_t CTP_I2C_READ(struct i2c_client *client, uint16_t address, uint8_t *buf,
 		uint16_t len)
 {
 	struct i2c_msg msgs[2];
@@ -184,7 +184,7 @@ int32_t CTP_I2C_READ(struct i2c_client *client, uint16_t address, uint8_t *buf,
  * return:
  *     Executive outcomes. 1---succeed. -5---I/O error
  *******************************************************/
-int32_t CTP_I2C_WRITE(struct i2c_client *client, uint16_t address, uint8_t *buf,
+inline int32_t CTP_I2C_WRITE(struct i2c_client *client, uint16_t address, uint8_t *buf,
 		uint16_t len)
 {
 	struct i2c_msg msg;
@@ -241,7 +241,7 @@ int32_t nvt_set_page(uint16_t i2c_addr, uint32_t addr)
  * return:
  *     n.a.
  *******************************************************/
-void nvt_sw_reset_idle(void)
+inline void nvt_sw_reset_idle(void)
 {
 	uint8_t buf[4]={0};
 
@@ -260,7 +260,7 @@ void nvt_sw_reset_idle(void)
  * return:
  *     n.a.
  *******************************************************/
-void nvt_bootloader_reset(void)
+inline void nvt_bootloader_reset(void)
 {
 	uint8_t buf[8] = {0};
 
@@ -284,7 +284,7 @@ void nvt_bootloader_reset(void)
  * return:
  *     Executive outcomes. 0---succeed. -1---fail.
  *******************************************************/
-int32_t nvt_clear_fw_status(void)
+inline int32_t nvt_clear_fw_status(void)
 {
 	uint8_t buf[8] = {0};
 	int32_t i = 0;
@@ -325,7 +325,7 @@ int32_t nvt_clear_fw_status(void)
  * return:
  *     Executive outcomes. 0---succeed. -1---failed.
  *******************************************************/
-int32_t nvt_check_fw_status(void)
+inline int32_t nvt_check_fw_status(void)
 {
 	uint8_t buf[8] = {0};
 	int32_t i = 0;
@@ -361,7 +361,7 @@ int32_t nvt_check_fw_status(void)
  * return:
  *     Executive outcomes. 0---succeed. -1---failed.
  ******************************************************/
-int32_t nvt_check_fw_reset_state(RST_COMPLETE_STATE check_reset_state)
+inline int32_t nvt_check_fw_reset_state(RST_COMPLETE_STATE check_reset_state)
 {
 	uint8_t buf[8] = {0};
 	int32_t ret = 0;
@@ -400,7 +400,7 @@ int32_t nvt_check_fw_reset_state(RST_COMPLETE_STATE check_reset_state)
  * return:
  *     Executive outcomes. 0---success. -1---fail.
  *******************************************************/
-int32_t nvt_read_pid(void)
+inline int32_t nvt_read_pid(void)
 {
 	uint8_t buf[3] = {0};
 
@@ -428,7 +428,7 @@ Description:
 return:
 	Executive outcomes. 0---success. -1---fail.
 *******************************************************/
-int32_t nvt_get_fw_info(void)
+inline int32_t nvt_get_fw_info(void)
 {
 	uint8_t buf[64] = {0};
 	uint32_t retry_count = 0;
@@ -681,7 +681,7 @@ static void nvt_flash_proc_deinit(void)
  * return:
  *     n.a.
  *******************************************************/
-void nvt_ts_wakeup_gesture_report(uint8_t gesture_id, uint8_t *data)
+inline void nvt_ts_wakeup_gesture_report(uint8_t gesture_id, uint8_t *data)
 {
 	uint32_t keycode = 0;
 	uint8_t func_type = data[2];
@@ -771,7 +771,7 @@ void nvt_ts_wakeup_gesture_report(uint8_t gesture_id, uint8_t *data)
  *     n.a.
  *******************************************************/
 #ifdef CONFIG_OF
-static void nvt_parse_dt(struct device *dev)
+static inline void nvt_parse_dt(struct device *dev)
 {
 	struct device_node *np = dev->of_node;
 
@@ -800,7 +800,7 @@ static void nvt_parse_dt(struct device *dev)
  * return:
  *     Executive outcomes. 0---succeed. not 0---failed.
  *******************************************************/
-static int nvt_gpio_config(struct nvt_ts_data *ts)
+static inline int nvt_gpio_config(struct nvt_ts_data *ts)
 {
 	int32_t ret = 0;
 
@@ -841,7 +841,7 @@ err_request_reset_gpio:
  * return:
  *     n.a.
  *******************************************************/
-static void nvt_gpio_deconfig(struct nvt_ts_data *ts)
+static inline void nvt_gpio_deconfig(struct nvt_ts_data *ts)
 {
 	if (gpio_is_valid(ts->irq_gpio))
 		gpio_free(ts->irq_gpio);
@@ -851,7 +851,7 @@ static void nvt_gpio_deconfig(struct nvt_ts_data *ts)
 #endif
 }
 
-static uint8_t nvt_fw_recovery(uint8_t *point_data)
+static inline uint8_t nvt_fw_recovery(uint8_t *point_data)
 {
 	uint8_t i = 0;
 	uint8_t detected = true;
@@ -909,7 +909,7 @@ static void nvt_esd_check_func(struct work_struct *work)
  * return:
  *     n.a.
  *******************************************************/
-static irqreturn_t nvt_ts_work_func(int irq, void *data)
+static inline irqreturn_t nvt_ts_work_func(int irq, void *data)
 {
 	int32_t ret = -1;
 	uint8_t point_data[POINT_DATA_LEN + 1] = {0};
@@ -1060,7 +1060,7 @@ XFER_ERROR:
  * return:
  *     n.a.
 *******************************************************/
-void nvt_stop_crc_reboot(void)
+inline void nvt_stop_crc_reboot(void)
 {
 	uint8_t buf[8] = {0};
 	int32_t retry = 0;
@@ -1122,7 +1122,7 @@ void nvt_stop_crc_reboot(void)
  * return:
  *     Executive outcomes. 0---NVT IC. -1---not NVT IC.
  *******************************************************/
-static int8_t nvt_ts_check_chip_ver_trim(void)
+static inline int8_t nvt_ts_check_chip_ver_trim(void)
 {
 	uint8_t buf[8] = {0};
 	int32_t retry = 0;
@@ -1499,7 +1499,7 @@ err_gpio_config_failed:
  * return:
  *     Executive outcomes. 0---succeed. negative---failed
  *******************************************************/
-static int32_t nvt_ts_probe(struct i2c_client *client,
+static inline int32_t nvt_ts_probe(struct i2c_client *client,
 	const struct i2c_device_id *id)
 {
 	int32_t ret = 0;
@@ -1586,7 +1586,7 @@ err_register_early_suspend_failed:
  * return:
  *     Executive outcomes. 0---succeed.
  *******************************************************/
-static int32_t nvt_ts_remove(struct i2c_client *client)
+static inline int32_t nvt_ts_remove(struct i2c_client *client)
 {
 	NVT_LOG("Removing driver...\n");
 
@@ -1655,7 +1655,7 @@ static int32_t nvt_ts_remove(struct i2c_client *client)
 	return 0;
 }
 
-static void nvt_ts_shutdown(struct i2c_client *client)
+static inline void nvt_ts_shutdown(struct i2c_client *client)
 {
 	NVT_LOG("Shutdown driver...\n");
 
@@ -1951,7 +1951,7 @@ static struct i2c_driver nvt_i2c_driver = {
  * return:
  *     Executive Outcomes. 0---succeed. not 0---failed.
  ********************************************************/
-static int32_t __init nvt_driver_init(void)
+static inline int32_t __init nvt_driver_init(void)
 {
 	int32_t ret = 0;
 
@@ -1976,7 +1976,7 @@ err_driver:
  * return:
  *     n.a.
  ********************************************************/
-static void __exit nvt_driver_exit(void)
+static inline void __exit nvt_driver_exit(void)
 {
 	i2c_del_driver(&nvt_i2c_driver);
 }
