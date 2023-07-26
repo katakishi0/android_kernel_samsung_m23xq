@@ -2427,7 +2427,6 @@ static irqreturn_t nvt_ts_work_func(int irq, void *data)
 			input_err(true, &ts->client->dev, "%s: Check FW state failed after FW reset recovery\n", __func__);
 		else
 			nvt_ts_mode_restore(ts);
-
 		goto XFER_ERROR;
 	}
 #endif /* #if NVT_TOUCH_WDT_RECOVERY */
