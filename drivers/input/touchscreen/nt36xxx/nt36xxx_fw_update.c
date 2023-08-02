@@ -32,12 +32,7 @@ static int32_t nvt_get_fw_need_write_size(const struct firmware *fw_entry)
 	total_sectors_to_check = fw_entry->size / FLASH_SECTOR_SIZE;
 
 	for (i = total_sectors_to_check; i > 0; i--) {
-		if ((memcmp((const char *)&fw_entry->data[i *
-				FLASH_SECTOR_SIZE - NVT_FLASH_END_FLAG_LEN],
-				"NVT", NVT_FLASH_END_FLAG_LEN) == 0) ||
-			(memcmp((const char *)&fw_entry->data[i *
-				FLASH_SECTOR_SIZE - NVT_FLASH_END_FLAG_LEN],
-				 "MOD", NVT_FLASH_END_FLAG_LEN) == 0)) {
+		if (memcmp(&fw_entry->data[i * FLASH_SECTOR_SIZE - NVT_FLASH_END_FLAG_LEN], "NVT", NVT_FLASH_END_FLAG_LEN) == 0) {
 			fw_need_write_size = i * FLASH_SECTOR_SIZE;
 			return 0;
 		}
@@ -53,7 +48,7 @@ int32_t update_firmware_request(char *filename)
 	if (NULL == filename)
 		return -1;
 
-	ret = request_firmware(&fw_entry, filename, &ts->client->dev);
+	ret = request_firmware_nowarn(&fw_entry, filename, &ts->client->dev);
 	if (ret)
 		return ret;
 
@@ -706,10 +701,9 @@ int32_t nvt_check_flash_end_flag(void)
 	if (ret < 0)
 		return ret;
 
-	strlcpy(nvt_end_flag, &buf[3], sizeof(nvt_end_flag));
+	strlcpy(nvt_end_flag, &buf[3], NVT_FLASH_END_FLAG_LEN);
 
-	if ((memcmp(nvt_end_flag, "NVT", NVT_FLASH_END_FLAG_LEN) == 0) ||
-		(memcmp(nvt_end_flag, "MOD", NVT_FLASH_END_FLAG_LEN) == 0)) {
+	if (memcmp(nvt_end_flag, "NVT", NVT_FLASH_END_FLAG_LEN) == 0) {
 		return 0;
 	} else {
 		return 1;
@@ -724,11 +718,6 @@ void Boot_Update_Firmware(struct work_struct *work)
 
 	snprintf(firmware_name, sizeof(firmware_name),
 			BOOT_UPDATE_FIRMWARE_NAME);
-
-	if (ts->nvt_pid == 0x5B0B) {
-		NVT_LOG("Skip Firmware Update\n");
-		return;
-	}
 
 	ret = update_firmware_request(firmware_name);
 	if (ret)
