@@ -413,10 +413,8 @@ static inline uint8_t nvt_fw_recovery(uint8_t *point_data)
 	return detected;
 }
 
-static inline void nvt_ts_worker(struct work_struct *work)
+static inline irqreturn_t nvt_ts_work_func(int irq, void *data)
 {
-	struct nvt_ts_data *ts = container_of(work, struct nvt_ts_data, irq_work);
-
 	int32_t ret = -1;
 	int32_t i = 0;
 	int32_t finger_cnt = 0;
@@ -446,7 +444,7 @@ static inline void nvt_ts_worker(struct work_struct *work)
 		input_id = (uint8_t) (point_data[1] >> 3);
 		nvt_ts_wakeup_gesture_report(input_id, point_data);
 		mutex_unlock(&ts->lock);
-		return;
+		return IRQ_HANDLED;
 	}
 #endif
 
@@ -486,14 +484,6 @@ static inline void nvt_ts_worker(struct work_struct *work)
 
 XFER_ERROR:
 	mutex_unlock(&ts->lock);
-	return;
-}
-
-static irqreturn_t nvt_ts_work_func(int irq, void *data)
-{
-	struct nvt_ts_data *ts = data;
-
-	queue_work(ts->coord_workqueue, &ts->irq_work);
 
 	return IRQ_HANDLED;
 }
