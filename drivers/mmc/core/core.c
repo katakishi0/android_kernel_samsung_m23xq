@@ -2678,9 +2678,6 @@ void mmc_power_up(struct mmc_host *host, u32 ocr)
 
 	host->ios.vdd = fls(ocr) - 1;
 	host->ios.power_mode = MMC_POWER_UP;
-
-	printk(KERN_ERR" Transferring:>>>>>%s-%d<<<<<<<\r\n " ,__func__,__LINE__);
-	dev_dbg(mmc_dev(host), " Transferring mmc before init\n " );
 	/* Set initial state and call mmc_set_ios */
 	mmc_set_initial_state(host);
 
