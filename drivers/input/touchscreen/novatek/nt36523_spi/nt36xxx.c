@@ -3729,15 +3729,10 @@ int32_t nvt_ts_resume(struct device *dev)
 	ts->ed_reset_flag = false;
 
 	if (ts->ear_detect_mode) {
-		set_ear_detect(ts, ts->ear_detect_mode, false);
-	} else {
-		if (ts->ed_reset_flag) {
-			input_info(true, &ts->client->dev, "%s : set ed on & off\n", __func__);
-			set_ear_detect(ts, 1, false);
-			set_ear_detect(ts, 0, false);
+		if (set_ear_detect(ts, ts->ear_detect_mode, true)) {
+			input_err(true, &ts->client->dev, "%s : Fail to set set_ear_detect\n", __func__);
 		}
 	}
-	ts->ed_reset_flag = false;
 
 #if NVT_TOUCH_ESD_PROTECT
 	nvt_esd_check_enable(false);
