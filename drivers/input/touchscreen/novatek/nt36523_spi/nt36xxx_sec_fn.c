@@ -5931,25 +5931,23 @@ static ssize_t enabled_store(struct device *dev, struct device_attribute *attr,
 
 	input_info(true, &ts->client->dev, "%s: %d %d\n", __func__, buff[0], buff[1]);
 
-	/* handle same sequence : buff[0] = DISPLAY_STATE_ON, DISPLAY_STATE_DOZE, DISPLAY_STATE_DOZE_SUSPEND */
-	if (buff[0] == DISPLAY_STATE_DOZE || buff[0] == DISPLAY_STATE_DOZE_SUSPEND)
-		buff[0] = DISPLAY_STATE_ON;
+	/* handle same sequence : buff[0] = LCD_ON, LCD_DOZE1, LCD_DOZE2*/
+	if (buff[0] == LCD_DOZE1 || buff[0] == LCD_DOZE2)
+		buff[0] = LCD_ON;
 
-	if (buff[0] == DISPLAY_STATE_ON) {
-		if (buff[1] == DISPLAY_EVENT_EARLY)
+	if (buff[0] == LCD_ON) {
+		if (buff[1] == LCD_EARLY_EVENT)
 			nvt_ts_early_resume(&ts->client->dev);
-		else if (buff[1] == DISPLAY_EVENT_LATE)
+		else if (buff[1] == LCD_LATE_EVENT)
 			nvt_ts_resume(&ts->client->dev);
-	} else if (buff[0] == DISPLAY_STATE_OFF) {
-		if (buff[1] == DISPLAY_EVENT_EARLY)
+	} else if (buff[0] == LCD_OFF) {
+		if (buff[1] == LCD_EARLY_EVENT)
 			nvt_ts_suspend(&ts->client->dev);
-	} else if (buff[0] == DISPLAY_STATE_LPM_OFF) {
-		input_info(true, &ts->client->dev, "%s: DISPLAY_STATE_LPM_OFF ++\n", __func__);
-		ts->power_status = POWER_OFF_STATUS;
-		pinctrl_configure(ts, false);
-		nvt_irq_enable(false);
-		input_info(true, &ts->client->dev, "%s: DISPLAY_STATE_LPM_OFF --\n", __func__);
-	} else if (buff[0] == DISPLAY_STATE_SERVICE_SHUTDOWN) {
+	} else if (buff[0] == LPM_OFF) {
+		cancel_delayed_work_sync(&ts->nvt_fwu_work);
+		nvt_ts_suspend(&ts->client->dev);
+	} else if (buff[0] == SHUTDOWN) {
+		cancel_delayed_work_sync(&ts->nvt_fwu_work);
 		nvt_irq_enable(false);
 		ts->power_status = POWER_OFF_STATUS;
 		pinctrl_configure(ts, false);
