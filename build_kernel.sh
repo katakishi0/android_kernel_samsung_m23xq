@@ -1,6 +1,5 @@
 #!/bin/bash
 
-<<<<<<< HEAD
 rm -rf out
 mkdir -p out
 
