@@ -762,6 +762,11 @@ int usb_gadget_disconnect(struct usb_gadget *gadget)
 	if (!ret)
 		gadget->connected = 0;
 
+	mutex_lock(&udc_lock);
+	if (gadget->udc->driver)
+		gadget->udc->driver->disconnect(gadget);
+	mutex_unlock(&udc_lock);
+
 out:
 	trace_usb_gadget_disconnect(gadget, ret);
 

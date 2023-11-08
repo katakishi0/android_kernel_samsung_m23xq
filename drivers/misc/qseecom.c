@@ -2909,7 +2909,7 @@ static int qseecom_load_app(struct qseecom_dev_handle *data, void __user *argp)
 		ret = 0;
 	} else {
 		first_time = true;
-		pr_warn("App (%s) does'nt exist, loading apps for first time\n",
+		pr_warn("App (%s) doesn't exist, loading apps for first time\n",
 			(char *)(load_img_req.img_name));
 
 		ret = qseecom_vaddr_map(load_img_req.ifd_data_fd,
@@ -3784,8 +3784,8 @@ static int __qseecom_send_cmd(struct qseecom_dev_handle *data,
 				(uint32_t)(__qseecom_uvirt_to_kphys(
 				data, (uintptr_t)req->resp_buf));
 		} else {
-			send_data_req.req_ptr = (uint32_t)req->cmd_req_buf;
-			send_data_req.rsp_ptr = (uint32_t)req->resp_buf;
+			send_data_req.req_ptr = (uintptr_t)req->cmd_req_buf;
+			send_data_req.rsp_ptr = (uintptr_t)req->resp_buf;
 		}
 
 		send_data_req.req_len = req->cmd_req_len;
