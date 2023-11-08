@@ -223,7 +223,6 @@ void kfree(const void *);
  */
 static inline bool __rcu_reclaim(const char *rn, struct rcu_head *head)
 {
-	rcu_callback_t f;
 	unsigned long offset = (unsigned long)head->func;
 
 	rcu_lock_acquire(&rcu_callback_map);
@@ -234,9 +233,7 @@ static inline bool __rcu_reclaim(const char *rn, struct rcu_head *head)
 		return true;
 	} else {
 		RCU_TRACE(trace_rcu_invoke_callback(rn, head);)
-		f = head->func;
-		WRITE_ONCE(head->func, (rcu_callback_t)0L);
-		f(head);
+		head->func(head);
 		rcu_lock_release(&rcu_callback_map);
 		return false;
 	}

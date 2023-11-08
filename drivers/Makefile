@@ -207,6 +207,7 @@ obj-$(CONFIG_UH)        += uh/
 obj-$(CONFIG_SPU_VERIFY) += spu_verify/
 
 # OLOG
+obj-y				+= kperfmon/
 obj-y += security/samsung/icdrv/ # ADDED BY LEGO AUTOMATICALLY: DO NOT SUBMIT
 obj-y += misc/drb/ # ADDED BY LEGO AUTOMATICALLY: DO NOT SUBMIT
 obj-y += vibrator/common/ # ADDED BY LEGO AUTOMATICALLY: DO NOT SUBMIT

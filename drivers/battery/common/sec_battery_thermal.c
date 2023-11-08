@@ -663,7 +663,7 @@ void sec_bat_thermal_check(struct sec_battery_info *battery)
 	bat_thm = sec_bat_get_high_priority_temp(battery);
 #endif
 
-	pr_info("%s: co_c3: %d, c3_c2: %d, c2_c1: %d, c1_no: %d, no_wa: %d, wa_ov: %d, tz(%s)\n", __func__,
+	pr_err("%s: co_c3: %d, c3_c2: %d, c2_c1: %d, c1_no: %d, no_wa: %d, wa_ov: %d, tz(%s)\n", __func__,
 			battery->cold_cool3_thresh, battery->cool3_cool2_thresh, battery->cool2_cool1_thresh,
 			battery->cool1_normal_thresh, battery->normal_warm_thresh, battery->warm_overheat_thresh,
 			sec_bat_thermal_zone[battery->thermal_zone]);
