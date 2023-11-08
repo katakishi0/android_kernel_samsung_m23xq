@@ -197,7 +197,7 @@ void set_dload_mode(int on)
 	dload_mode_enabled = on;
 
 #ifdef CONFIG_SEC_DEBUG
-	pr_err("set_dload_mode <%d> ( %lx )\n", on, CALLER_ADDR0);
+	pr_info("set_dload_mode <%d> ( %lx )\n", on, CALLER_ADDR0);
 #endif
 }
 
@@ -269,7 +269,7 @@ static void *map_prop_mem(const char *propname)
 	void *addr;
 
 	if (!np) {
-		pr_err("Unable to find DT property: %s\n", propname);
+		pr_info("Unable to find DT property: %s\n", propname);
 		return NULL;
 	}
 
