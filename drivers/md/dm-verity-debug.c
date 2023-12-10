@@ -83,7 +83,7 @@ void add_dmv_ctr_entry(char* dev_name){
 }
 
 struct blks_info * get_b_info(char* dev_name){
-    pr_info("dm-verity-debug : dev_name = %s\n",dev_name);
+    pr_err("dm-verity-debug : dev_name = %s\n",dev_name);
 
     if(empty_b_info()) {
         b_info = create_b_info();
