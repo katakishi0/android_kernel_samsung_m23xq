@@ -456,7 +456,7 @@ static int qpnp_flash_led_safety_tmr_config(struct qpnp_flash_led *led)
 static int qpnp_flash_led_strobe_config(struct qpnp_flash_led *led)
 {
 	int i, rc, addr_offset;
-	u8 val = 0, mask, strobe_mask = 0, strobe_ctrl;
+	mask, strobe_mask = 0, strobe_ctrl;
 
 	for (i = 0; i < led->num_fnodes; i++) {
 		val |= 0x1 << led->fnode[i].id;
