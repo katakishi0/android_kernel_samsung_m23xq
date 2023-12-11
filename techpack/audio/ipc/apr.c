@@ -936,7 +936,7 @@ int apr_deregister(void *handle)
 			svc->port_cnt--;
 		svc->svc_cnt--;
 		if (!svc->svc_cnt) {
-			client[dest_id][client_id].svc_cnt--;
+			&client[dest_id][client_id].svc_cnt--;
 			pr_debug("%s: service is reset %pK\n", __func__, svc);
 		}
 	}
@@ -949,10 +949,10 @@ int apr_deregister(void *handle)
 		svc->client_id = 0;
 		svc->need_reset = 0x0;
 	}
-	if (client[dest_id][client_id].handle &&
-	    !client[dest_id][client_id].svc_cnt) {
-		apr_tal_close(client[dest_id][client_id].handle);
-		client[dest_id][client_id].handle = NULL;
+	if (&client[dest_id][client_id].handle &&
+	    !&client[dest_id][client_id].svc_cnt) {
+		apr_tal_close(&client[dest_id][client_id].handle);
+		&client[dest_id][client_id].handle = NULL;
 	}
 	mutex_unlock(&svc->m_lock);
 
