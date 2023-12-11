@@ -1613,7 +1613,6 @@ int wcd938x_tx_channel_config(struct snd_soc_component *component,
 			      int channel, int mode)
 {
 	int reg = WCD938X_ANA_TX_CH2, mask = 0, val = 0;
-	int ret = 0;
 
 	switch (channel) {
 	case 0:
@@ -1634,7 +1633,6 @@ int wcd938x_tx_channel_config(struct snd_soc_component *component,
 		break;
 	default:
 		pr_err("%s: Invalid channel num %d\n", __func__, channel);
-		ret = -EINVAL;
 		break;
 	}
 
@@ -1643,10 +1641,7 @@ int wcd938x_tx_channel_config(struct snd_soc_component *component,
 	else
 		val = mask;
 
-	if (!ret)
-		snd_soc_component_update_bits(component, reg, mask, val);
-
-	return ret;
+	return 0;
 }
 
 static int wcd938x_codec_enable_adc(struct snd_soc_dapm_widget *w,
