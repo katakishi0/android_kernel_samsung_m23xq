@@ -2443,15 +2443,12 @@ static int wlan_hdd_sap_get_valid_channellist(struct hdd_adapter *adapter,
 					      uint32_t *freq_list,
 					      enum band_info band)
 {
-	struct sap_config *sap_config;
 	struct hdd_context *hdd_ctx = WLAN_HDD_GET_CTX(adapter);
 	uint32_t pcl_freqs[NUM_CHANNELS] = {0};
 	uint32_t chan_count;
 	uint32_t i;
 	QDF_STATUS status;
 	struct wlan_objmgr_pdev *pdev = hdd_ctx->pdev;
-
-	sap_config = &adapter->session.ap.sap_config;
 
 	status = policy_mgr_get_valid_chans(hdd_ctx->psoc,
 					    pcl_freqs,
