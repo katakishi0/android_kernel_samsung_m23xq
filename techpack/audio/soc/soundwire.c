@@ -898,6 +898,7 @@ static int __unregister(struct device *dev, void *null)
  */
 void swr_unregister_master(struct swr_master *master)
 {
+	int dummy;
 	struct swr_master *m_ctrl;
 
 	mutex_lock(&swr_lock);
@@ -915,6 +916,7 @@ void swr_unregister_master(struct swr_master *master)
 	idr_remove(&master_idr, master->bus_num);
 	mutex_unlock(&swr_lock);
 
+	dummy = device_for_each_child(&master->dev, NULL, __unregister);
 	device_unregister(&master->dev);
 }
 EXPORT_SYMBOL(swr_unregister_master);
