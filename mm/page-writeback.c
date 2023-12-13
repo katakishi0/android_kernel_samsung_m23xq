@@ -1861,7 +1861,6 @@ pause:
 			unsigned long nr_dirty_inodes_in_timelist = 0; /* # of dirty inodes in b_dirty_time list */
 			struct inode *inode;
 
-			printk_ratelimited(KERN_DEBUG "logtime_stamp = %lu\n", logtime_stamp);
 			logtime_stamp = jiffies;
 			spin_lock(&wb->list_lock);
 			list_for_each_entry(inode, &wb->b_dirty_time, i_io_list) {
