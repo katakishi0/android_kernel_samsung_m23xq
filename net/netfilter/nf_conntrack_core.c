@@ -1243,6 +1243,7 @@ static void gc_worker(struct work_struct *work)
 				nf_ct_gc_expired(tmp);
 				continue;
 
+			}
 			#ifdef CONFIG_KNOX_NCM
 			else if ( (tmp != NULL) && (check_ncm_flag()) && (check_intermediate_flag()) && (atomic_read(&tmp->startFlow)) && (atomic_read(&tmp->intermediateFlow)) ) {
 				s32 npa_timeout = tmp->npa_timeout - ((u32)(jiffies));

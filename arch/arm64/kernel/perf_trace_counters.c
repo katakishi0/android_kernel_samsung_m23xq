@@ -161,6 +161,8 @@ int __init init_tracecounters(void)
 		tracectr_cpu_hotplug_coming_up,
 		NULL);
 	return 0;
+
+	(void)rc;
 }
 
 int __exit exit_tracecounters(void)

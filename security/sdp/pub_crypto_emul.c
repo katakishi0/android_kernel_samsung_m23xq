@@ -197,10 +197,8 @@ static int pub_crypto_recv_msg(struct sk_buff *skb, struct nlmsghdr *nlh)
 	u16			msg_type = nlh->nlmsg_type;
 	u32 err = 0;
 	struct audit_status	*status_get = NULL;
-	u16 len = 0;
 
 	data = NLMSG_DATA(nlh);
-	len = ntohs(*(uint16_t*) (data+1));
 	switch (msg_type) {
 		case PUB_CRYPTO_PID_SET:
 			status_get   = (struct audit_status *)data;
@@ -242,6 +240,10 @@ static void crypto_recver(struct sk_buff  *skb)
 	len = skb->len;
 
 	err = pub_crypto_recv_msg(skb, nlh);
+	
+	// Intentionally tell the compiler 'len' and 'err' are not used in this function
+	(void)len;
+	(void)err;
 }
 
 static void dump(unsigned char *buf, int len, const char *msg) {

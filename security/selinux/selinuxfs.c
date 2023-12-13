@@ -140,7 +140,7 @@ static ssize_t sel_write_enforce(struct file *file, const char __user *buf,
 	struct selinux_state *state = fsi->state;
 	char *page = NULL;
 	ssize_t length;
-	int old_value, new_value;
+	int new_value;
 
 	if (count >= PAGE_SIZE)
 		return -ENOMEM;
@@ -158,8 +158,6 @@ static ssize_t sel_write_enforce(struct file *file, const char __user *buf,
 		goto out;
 
 	new_value = !!new_value;
-
-	old_value = enforcing_enabled(state);
 
 	// [ SEC_SELINUX_PORTING_COMMON
 #ifdef CONFIG_ALWAYS_ENFORCE

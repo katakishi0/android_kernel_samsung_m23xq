@@ -212,6 +212,7 @@ static void unpack_shadow(void *shadow, int *memcgidp, pg_data_t **pgdat,
 	*pgdat = NODE_DATA(nid);
 	*evictionp = entry << bucket_order;
 	*workingsetp = workingset;
+	(void)nid;
 }
 
 /**

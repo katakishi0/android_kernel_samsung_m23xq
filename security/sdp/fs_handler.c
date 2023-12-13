@@ -113,6 +113,9 @@ static int __handle_request(sdp_fs_handler_request_t *req, char *ret) {
     mutex_unlock(&g_send_mutex);
 
     skb_out = skb_dequeue(&g_sock->sk_receive_queue);
+
+    (void)rc;
+
     if(skb_out) {
         kfree_skb(skb_out);
     }
@@ -158,6 +161,7 @@ static int __recver(struct sk_buff *skb, struct nlmsghdr *nlh)
 
     data = NLMSG_DATA(nlh);
     len = ntohs(*(uint16_t*) (data+1));
+    (void)len;
     switch (msg_type) {
     case SDP_FS_HANDLER_PID_SET:
         status_get   = (struct audit_status *)data;
@@ -208,6 +212,9 @@ static void recver(struct sk_buff  *skb)
     len = skb->len;
 
     err = __recver(skb, nlh);
+
+    (void)len;
+    (void)err;
 }
 
 static int to_netlink_msg(sdp_fs_handler_request_t *req, char **msg)

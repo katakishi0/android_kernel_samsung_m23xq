@@ -1524,9 +1524,9 @@ static void cpuset_cancel_attach(struct cgroup_taskset *tset)
 	struct cpuset *cs;
 
 	cgroup_taskset_first(tset, &css);
-	cs = css_cs(css);
 
 	mutex_lock(&cpuset_mutex);
+	cs = css_cs(css);
 	css_cs(css)->attach_in_progress--;
 	mutex_unlock(&cpuset_mutex);
 }

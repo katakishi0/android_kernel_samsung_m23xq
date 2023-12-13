@@ -782,7 +782,6 @@ static int security_compute_validatetrans(struct selinux_state *state,
 					  u16 orig_tclass, bool user)
 {
 	struct policydb *policydb;
-	struct sidtab *sidtab;
 	struct context *ocontext;
 	struct context *ncontext;
 	struct context *tcontext;
@@ -798,7 +797,6 @@ static int security_compute_validatetrans(struct selinux_state *state,
 	read_lock(&state->ss->policy_rwlock);
 
 	policydb = &state->ss->policydb;
-	sidtab = state->ss->sidtab;
 
 	if (!user)
 		tclass = unmap_class(&state->ss->map, orig_tclass);
@@ -886,7 +884,6 @@ int security_bounded_transition(struct selinux_state *state,
 				u32 old_sid, u32 new_sid)
 {
 	struct policydb *policydb;
-	struct sidtab *sidtab;
 	struct context *old_context, *new_context;
 	struct type_datum *type;
 	int index;
@@ -898,7 +895,6 @@ int security_bounded_transition(struct selinux_state *state,
 	read_lock(&state->ss->policy_rwlock);
 
 	policydb = &state->ss->policydb;
-	sidtab = state->ss->sidtab;
 
 	rc = -EINVAL;
 	old_context = sidtab_search(sidtab, old_sid);
@@ -1036,7 +1032,6 @@ void security_compute_xperms_decision(struct selinux_state *state,
 				      struct extended_perms_decision *xpermd)
 {
 	struct policydb *policydb;
-	struct sidtab *sidtab;
 	u16 tclass;
 	struct context *scontext, *tcontext;
 	struct avtab_key avkey;
@@ -1056,7 +1051,6 @@ void security_compute_xperms_decision(struct selinux_state *state,
 		goto allow;
 
 	policydb = &state->ss->policydb;
-	sidtab = state->ss->sidtab;
 
 	scontext = sidtab_search(sidtab, ssid);
 	if (!scontext) {
@@ -1134,7 +1128,6 @@ void security_compute_av(struct selinux_state *state,
 			 struct extended_perms *xperms)
 {
 	struct policydb *policydb;
-	struct sidtab *sidtab;
 	u16 tclass;
 	struct context *scontext = NULL, *tcontext = NULL;
 
@@ -1145,7 +1138,6 @@ void security_compute_av(struct selinux_state *state,
 		goto allow;
 
 	policydb = &state->ss->policydb;
-	sidtab = state->ss->sidtab;
 
 	scontext = sidtab_search(sidtab, ssid);
 	if (!scontext) {
@@ -1190,7 +1182,6 @@ void security_compute_av_user(struct selinux_state *state,
 			      struct av_decision *avd)
 {
 	struct policydb *policydb;
-	struct sidtab *sidtab;
 	struct context *scontext = NULL, *tcontext = NULL;
 
 	read_lock(&state->ss->policy_rwlock);
@@ -1199,7 +1190,6 @@ void security_compute_av_user(struct selinux_state *state,
 		goto allow;
 
 	policydb = &state->ss->policydb;
-	sidtab = state->ss->sidtab;
 
 	scontext = sidtab_search(sidtab, ssid);
 	if (!scontext) {
@@ -1325,7 +1315,6 @@ static int security_sid_to_context_core(struct selinux_state *state,
 					u32 *scontext_len, int force)
 {
 	struct policydb *policydb;
-	struct sidtab *sidtab;
 	struct context *context;
 	int rc = 0;
 
@@ -1356,7 +1345,6 @@ static int security_sid_to_context_core(struct selinux_state *state,
 	}
 	read_lock(&state->ss->policy_rwlock);
 	policydb = &state->ss->policydb;
-	sidtab = state->ss->sidtab;
 	if (force)
 		context = sidtab_search_force(sidtab, sid);
 	else
@@ -1523,7 +1511,6 @@ static int security_context_to_sid_core(struct selinux_state *state,
 					int force)
 {
 	struct policydb *policydb;
-	struct sidtab *sidtab;
 	char *scontext2, *str = NULL;
 	struct context context;
 	int rc = 0;
@@ -1560,7 +1547,6 @@ static int security_context_to_sid_core(struct selinux_state *state,
 	}
 	read_lock(&state->ss->policy_rwlock);
 	policydb = &state->ss->policydb;
-	sidtab = state->ss->sidtab;
 	rc = string_to_context_struct(policydb, sidtab, scontext2,
 				      &context, def_sid);
 	if (rc == -EINVAL && force) {
@@ -1717,7 +1703,6 @@ static int security_compute_sid(struct selinux_state *state,
 				bool kern)
 {
 	struct policydb *policydb;
-	struct sidtab *sidtab;
 	struct class_datum *cladatum = NULL;
 	struct context *scontext = NULL, *tcontext = NULL, newcontext;
 	struct role_trans *roletr = NULL;
@@ -1754,7 +1739,6 @@ static int security_compute_sid(struct selinux_state *state,
 	}
 
 	policydb = &state->ss->policydb;
-	sidtab = state->ss->sidtab;
 
 	scontext = sidtab_search(sidtab, ssid);
 	if (!scontext) {
@@ -2357,14 +2341,12 @@ int security_port_sid(struct selinux_state *state,
 		      u8 protocol, u16 port, u32 *out_sid)
 {
 	struct policydb *policydb;
-	struct sidtab *sidtab;
 	struct ocontext *c;
 	int rc = 0;
 
 	read_lock(&state->ss->policy_rwlock);
 
 	policydb = &state->ss->policydb;
-	sidtab = state->ss->sidtab;
 
 	c = policydb->ocontexts[OCON_PORT];
 	while (c) {
@@ -2446,14 +2428,12 @@ int security_ib_endport_sid(struct selinux_state *state,
 			    const char *dev_name, u8 port_num, u32 *out_sid)
 {
 	struct policydb *policydb;
-	struct sidtab *sidtab;
 	struct ocontext *c;
 	int rc = 0;
 
 	read_lock(&state->ss->policy_rwlock);
 
 	policydb = &state->ss->policydb;
-	sidtab = state->ss->sidtab;
 
 	c = policydb->ocontexts[OCON_IBENDPORT];
 	while (c) {
@@ -2491,14 +2471,12 @@ int security_netif_sid(struct selinux_state *state,
 		       char *name, u32 *if_sid)
 {
 	struct policydb *policydb;
-	struct sidtab *sidtab;
 	int rc = 0;
 	struct ocontext *c;
 
 	read_lock(&state->ss->policy_rwlock);
 
 	policydb = &state->ss->policydb;
-	sidtab = state->ss->sidtab;
 
 	c = policydb->ocontexts[OCON_NETIF];
 	while (c) {
@@ -2641,7 +2619,6 @@ int security_get_user_sids(struct selinux_state *state,
 			   u32 *nel)
 {
 	struct policydb *policydb;
-	struct sidtab *sidtab;
 	struct context *fromcon, usercon;
 	u32 *mysids = NULL, *mysids2, sid;
 	u32 mynel = 0, maxnel = SIDS_NEL;
@@ -2659,7 +2636,6 @@ int security_get_user_sids(struct selinux_state *state,
 	read_lock(&state->ss->policy_rwlock);
 
 	policydb = &state->ss->policydb;
-	sidtab = state->ss->sidtab;
 
 	context_init(&usercon);
 
@@ -2842,7 +2818,6 @@ int security_genfs_sid(struct selinux_state *state,
 int security_fs_use(struct selinux_state *state, struct super_block *sb)
 {
 	struct policydb *policydb;
-	struct sidtab *sidtab;
 	int rc = 0;
 	struct ocontext *c;
 	struct superblock_security_struct *sbsec = sb->s_security;
@@ -2851,7 +2826,6 @@ int security_fs_use(struct selinux_state *state, struct super_block *sb)
 	read_lock(&state->ss->policy_rwlock);
 
 	policydb = &state->ss->policydb;
-	sidtab = state->ss->sidtab;
 
 	c = policydb->ocontexts[OCON_FSUSE];
 	while (c) {
