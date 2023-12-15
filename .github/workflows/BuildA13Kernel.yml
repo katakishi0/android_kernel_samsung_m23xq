@@ -78,7 +78,6 @@ jobs:
           export KERNEL_MAKE_ENV="DTC_EXT=$(pwd)/tools/dtc CONFIG_BUILD_ARM64_DT_OVERLAY=y"
           make -j8 -C $(pwd) O=$(pwd)/out AR=llvm-ar NM=llvm-nm OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump STRIP=llvm-strip $KERNEL_MAKE_ENV ARCH=arm64 CC=clang vendor/m23xq_eur_open_defconfig --no-print-directory
           make -j8 -C $(pwd) O=$(pwd)/out AR=llvm-ar NM=llvm-nm OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump STRIP=llvm-strip $KERNEL_MAKE_ENV ARCH=arm64 CC=clang --no-print-directory
-          $GITHUB_WORKSPACE/kernel-source/tools/mkdtimg create $(pwd)/out/arch/arm64/boot/dtbo.img --page_size=4096 $(find out/arch/arm64/boot/dts/samsung/m23/m23xq/ -name *.dtbo)
 
       - name: Upload Kernel
         uses: actions/upload-artifact@v3
@@ -90,7 +89,6 @@ jobs:
         working-directory: anykernel
         run: |
           cp -f $GITHUB_WORKSPACE/kernel-source/out/arch/arm64/boot/Image .
-          cp -f $GITHUB_WORKSPACE/kernel-source/out/arch/arm64/boot/dtbo.img .
           cp -f $GITHUB_WORKSPACE/kernel-source/out/arch/arm64/boot/dts/vendor/qcom/lagoon.dtb .
           ZIP_NAME="Kernel-${{ matrix.device }}-${{ env.date }}"
           echo "ZIP_NAME=$ZIP_NAME" >> $GITHUB_ENV
