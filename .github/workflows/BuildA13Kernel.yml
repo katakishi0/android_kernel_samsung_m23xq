@@ -78,7 +78,8 @@ jobs:
           export KERNEL_MAKE_ENV="DTC_EXT=$(pwd)/tools/dtc CONFIG_BUILD_ARM64_DT_OVERLAY=y"
           make -j8 -C $(pwd) O=$(pwd)/out AR=llvm-ar NM=llvm-nm OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump STRIP=llvm-strip $KERNEL_MAKE_ENV ARCH=arm64 CC=clang vendor/m23xq_eur_open_defconfig --no-print-directory
           make -j8 -C $(pwd) O=$(pwd)/out AR=llvm-ar NM=llvm-nm OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump STRIP=llvm-strip $KERNEL_MAKE_ENV ARCH=arm64 CC=clang --no-print-directory
-          
+          $GITHUB_WORKSPACE/kernel-source/tools/mkdtimg create $(pwd)/out/arch/arm64/boot/dtbo.img --page_size=4096 $(find out/arch/arm64/boot/dts/samsung/m23/m23xq/ -name *.dtbo)
+
       - name: Upload Kernel
         uses: actions/upload-artifact@v3
         with:
@@ -89,11 +90,12 @@ jobs:
         working-directory: anykernel
         run: |
           cp -f $GITHUB_WORKSPACE/kernel-source/out/arch/arm64/boot/Image .
-          ZIP_NAME="Kernel-v-${{ matrix.device }}-${{ env.date }}"
+          cp -f $GITHUB_WORKSPACE/kernel-source/out/arch/arm64/boot/dtbo.img .
+          cp -f $GITHUB_WORKSPACE/kernel-source/out/arch/arm64/boot/dts/vendor/qcom/lagoon.dtb .
+          ZIP_NAME="Kernel-${{ matrix.device }}-${{ env.date }}"
           echo "ZIP_NAME=$ZIP_NAME" >> $GITHUB_ENV
           zip -r "$ZIP_NAME.zip" *
           mv "$ZIP_NAME.zip" $GITHUB_WORKSPACE
-          echo "BUILD COMPLETE"
           
       - name: Upload Anykernel
         uses: actions/upload-artifact@v3
@@ -103,17 +105,16 @@ jobs:
           
       - name: Creating Config Info
         run: |
-          echo "Device: Samsung
-          Device: ${{ matrix.device }}
-          Build Code: v-${{ env.KSU_VERSION }}-$(date +%Y%m%d)_${{ github.run_number }}
-          Only For AOSP Based Roms (For now)
+          echo "Device: Samsung Galaxy M23/F23 5G (m23xq)"
+          Build Date: $(date +%d\ %m\ %Y)
+          Only For AOSP Based Roms (GSI/ Custom Rom)
           " >> INFO.txt
       
       - name: Release
         if: success()
         uses: softprops/action-gh-release@v1
         with:
-          name: "Kernel A13 For ${{ matrix.device }}"
+          name: "Kernel Android 13 For Samsung Galaxy M23/F23 5G (m23xq)"
           body_path: "INFO.txt"
           files: |
             kernel-source/out/arch/arm64/boot/*
