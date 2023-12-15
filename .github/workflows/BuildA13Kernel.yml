@@ -88,11 +88,12 @@ jobs:
       - name: Prepare Anykernel
         working-directory: anykernel
         run: |
-          cp -f $GITHUB_WORKSPACE/kernel-source/out/arch/arm64/boot/Image.gz-dtb .
+          cp -f $GITHUB_WORKSPACE/kernel-source/out/arch/arm64/boot/Image .
           ZIP_NAME="Kernel-v-${{ matrix.device }}-${{ env.date }}"
           echo "ZIP_NAME=$ZIP_NAME" >> $GITHUB_ENV
           zip -r "$ZIP_NAME.zip" *
           mv "$ZIP_NAME.zip" $GITHUB_WORKSPACE
+          echo "BUILD COMPLETE"
           
       - name: Upload Anykernel
         uses: actions/upload-artifact@v3
