@@ -34,8 +34,8 @@ jobs:
         if: steps.cache-aosp-clang.outputs.cache-hit != 'true'
         run: |
           git clone https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86 --depth=1 -b android-13.0.0_r0.130 linux-x86
-          git clone https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9 -b android-13.0.0_r0.13 --depth=1 aarch64-linux-android-4.9
-          git clone https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/arm/arm-linux-androideabi-4.9 -b android-13.0.0_r0.13 --depth=1 arm-linux-androideabi-4.9
+          git clone https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9 -b android-13.0.0_r0.130 --depth=1 aarch64-linux-android-4.9
+          git clone https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/arm/arm-linux-androideabi-4.9 -b android-13.0.0_r0.130 --depth=1 arm-linux-androideabi-4.9
       
       - name: Setup kernel source
         uses: actions/checkout@v3
