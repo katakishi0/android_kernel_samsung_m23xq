@@ -3991,7 +3991,7 @@ try_onemore:
 					"write access unavailable");
 				goto free_meta;
 			}
-			f2fs_err(sbi->sb, KERN_INFO, "write access "
+			f2fs_err(sbi, KERN_INFO, "write access "
 				"unavailable, skipping recovery");
 			goto reset_checkpoint;
 		}
