@@ -2027,9 +2027,15 @@ static void mmc_blk_read_single(struct mmc_queue *mq, struct request *req)
 
 		while (retries++ <= MMC_READ_SINGLE_RETRIES) {
 			mmc_blk_rw_rq_prep(mqrq, card, 1, mq);
+<<<<<<< HEAD
 
 			mmc_wait_for_req(host, mrq);
 
+=======
+
+			mmc_wait_for_req(host, mrq);
+
+>>>>>>> 7bbcfcfa83c32cffc2b538b7c8136b1cadb8ec80
 			err = mmc_send_status(card, &status);
 			if (err)
 				goto error_exit;
