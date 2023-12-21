@@ -9,10 +9,7 @@ obj-$(CONFIG_SEC_MISC)		+= misc/
 obj-$(CONFIG_SEC_QUEST)		+= quest/
 
 obj-$(CONFIG_SEC_DEBUG_TEST)	+= debug/
-<<<<<<< HEAD
-GCOV_PROFILE_sec_class.o		:=y
-=======
+
 GCOV_PROFILE_sec_class.o		:=y
 
 obj-$(CONFIG_SAMSUNG_LMKD_DEBUG)		+= lmkd_debug.o
->>>>>>> 7bbcfcfa83c32cffc2b538b7c8136b1cadb8ec80
