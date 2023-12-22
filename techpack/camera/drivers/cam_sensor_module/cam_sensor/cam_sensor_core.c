@@ -1134,7 +1134,7 @@ int32_t cam_sensor_driver_cmd(struct cam_sensor_ctrl_t *s_ctrl,
 		platformSensorId = s_ctrl->sensordata->slave_info.sensor_id;
 
 		/* Parse and fill vreg params for powerup settings */
-		CAM_INFO(CAM_SENSOR,"Calling Vreg Params for Power Settings - 0x%x", platformSensorId);
+		CAM_ERR(CAM_SENSOR,"Calling Vreg Params for Power Settings - 0x%x", platformSensorId);
 		rc = msm_camera_fill_vreg_params(
 			&s_ctrl->soc_info,
 			s_ctrl->sensordata->power_info.power_setting,
@@ -1147,7 +1147,7 @@ int32_t cam_sensor_driver_cmd(struct cam_sensor_ctrl_t *s_ctrl,
 		}
 
 		/* Parse and fill vreg params for powerdown settings*/
-		CAM_INFO(CAM_SENSOR,"Calling Vreg Params for Power Down Settings - 0x%x", platformSensorId);
+		CAM_ERR(CAM_SENSOR,"Calling Vreg Params for Power Down Settings - 0x%x", platformSensorId);
 		rc = msm_camera_fill_vreg_params(
 			&s_ctrl->soc_info,
 			s_ctrl->sensordata->power_info.power_down_setting,

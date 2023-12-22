@@ -55,6 +55,8 @@
 #include <sound/pcm_params.h>
 #include <sound/initval.h>
 
+#include <linux/usb_notify.h>
+
 #include "usbaudio.h"
 #include "card.h"
 #include "midi.h"
@@ -264,8 +266,9 @@ static int snd_usb_create_stream(struct snd_usb_audio *chip, int ctrlif, int int
 				ctrlif, interface);
 			return -EINVAL;
 		}
-		return usb_driver_claim_interface(&usb_audio_driver, iface,
-						  USB_AUDIO_IFACE_UNUSED);
+		usb_driver_claim_interface(&usb_audio_driver, iface, (void *)-1L);
+
+		return 0;
 	}
 
 	if ((altsd->bInterfaceClass != USB_CLASS_AUDIO &&
@@ -285,8 +288,7 @@ static int snd_usb_create_stream(struct snd_usb_audio *chip, int ctrlif, int int
 
 	if (! snd_usb_parse_audio_interface(chip, interface)) {
 		usb_set_interface(dev, interface, 0); /* reset the current interface */
-		return usb_driver_claim_interface(&usb_audio_driver, iface,
-						  USB_AUDIO_IFACE_UNUSED);
+		usb_driver_claim_interface(&usb_audio_driver, iface, (void *)-1L);
 	}
 
 	return 0;
@@ -730,6 +732,10 @@ static int usb_audio_probe(struct usb_interface *intf,
 	}
 	dev_set_drvdata(&dev->dev, chip);
 
+#ifdef CONFIG_USB_AUDIO_ENHANCED_DETECT_TIME
+	set_usb_audio_cardnum(chip->card->number, 0, 1);
+	send_usb_audio_uevent(chip->dev, chip->card->number, 1);
+#endif
 	/*
 	 * For devices with more than one control interface, we assume the
 	 * first contains the audio controls. We might need a more specific
@@ -765,6 +771,7 @@ static int usb_audio_probe(struct usb_interface *intf,
 		if (err < 0)
 			goto __error;
 	}
+	pr_info("%s : card %d is registered.\n", __func__, chip->card->number);
 
 	usb_chip[chip->index] = chip;
 	chip->num_interfaces++;
@@ -777,6 +784,10 @@ static int usb_audio_probe(struct usb_interface *intf,
 
  __error:
 	if (chip) {
+#ifdef CONFIG_USB_AUDIO_ENHANCED_DETECT_TIME
+		send_usb_audio_uevent(chip->dev, chip->card->number, 0);
+		set_usb_audio_cardnum(chip->card->number, 0, 0);
+#endif		
 		/* chip->active is inside the chip->card object,
 		 * decrement before memory is possibly returned.
 		 */
@@ -798,12 +809,18 @@ static void usb_audio_disconnect(struct usb_interface *intf)
 	struct snd_card *card;
 	struct list_head *p;
 
-	if (chip == USB_AUDIO_IFACE_UNUSED)
+	pr_info("%s : disconnect!\n", __func__);
+	if (chip == (void *)-1L)
 		return;
 
 	card = chip->card;
 	if (chip->disconnect_cb)
 		chip->disconnect_cb(chip);
+
+#ifdef CONFIG_USB_AUDIO_ENHANCED_DETECT_TIME
+	send_usb_audio_uevent(chip->dev, card->number, 0);
+	set_usb_audio_cardnum(chip->card->number, 0, 0);
+#endif		
 
 	mutex_lock(&register_mutex);
 	if (atomic_inc_return(&chip->shutdown) == 1) {
@@ -900,7 +917,7 @@ static int usb_audio_suspend(struct usb_interface *intf, pm_message_t message)
 	struct usb_mixer_interface *mixer;
 	struct list_head *p;
 
-	if (chip == USB_AUDIO_IFACE_UNUSED)
+	if (chip == (void *)-1L)
 		return 0;
 
 	if (!chip->num_suspended_intf++) {
@@ -932,7 +949,7 @@ static int __usb_audio_resume(struct usb_interface *intf, bool reset_resume)
 	struct list_head *p;
 	int err = 0;
 
-	if (chip == USB_AUDIO_IFACE_UNUSED)
+	if (chip == (void *)-1L)
 		return 0;
 
 	atomic_inc(&chip->active); /* avoid autopm */

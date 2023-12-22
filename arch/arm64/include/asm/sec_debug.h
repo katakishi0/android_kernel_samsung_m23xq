@@ -18,8 +18,6 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#include <asm/ptrace.h>
-
 #ifndef SEC_DEBUG_ARM64_H
 #define SEC_DEBUG_ARM64_H
 

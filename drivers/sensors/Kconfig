@@ -184,6 +184,10 @@ config SENSORS_A96T3x6_WIFI_BLOCK_UNKNOWN_1CH
 config SENSORS_A96T365IF
 	bool "Choose A96T365IF"
 	default n
+<<<<<<< HEAD
+=======
+	help
+>>>>>>> cd571fb4a1fa... Rebased based on Samsung M236BXXS4CWI5 changes
 
 config SENSORS_A96T3X6_UNSUPPORT_OTG
 	depends on I2C

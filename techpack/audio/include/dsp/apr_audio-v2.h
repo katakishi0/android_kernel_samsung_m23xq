@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
- * Copyright (c) 2012-2021, The Linux Foundation. All rights reserved.
+ * Copyright (c) 2012-2020, The Linux Foundation. All rights reserved.
  */
 
 
@@ -3965,7 +3965,6 @@ struct afe_param_id_device_hw_delay_cfg {
 } __packed;
 
 #define AFE_PARAM_ID_SET_TOPOLOGY    0x0001025A
-#define AFE_PARAM_ID_DEREGISTER_TOPOLOGY	0x000102E8
 #define AFE_API_VERSION_TOPOLOGY_V1 0x1
 
 struct afe_param_id_set_topology_cfg {
@@ -4102,6 +4101,12 @@ struct afe_id_aptx_adaptive_enc_init
  * This parameter cannot be set runtime.
  */
 #define AFE_ENCODER_PARAM_ID_PACKETIZER_ID 0x0001322E
+
+/*
+ * MI2S packetizer id for #AVS_MODULE_ID_ENCODER module.
+ * Used when I2S interface is selected.
+ */
+#define AFE_MODULE_ID_PACKETIZER_MI2S 0x1000F101
 
 /*
  * Encoder config block  parameter for the #AVS_MODULE_ID_ENCODER module.
@@ -4243,6 +4248,7 @@ struct aptx_channel_mode_param_t {
  * @table{weak__asm__sbc__enc__cfg__t}
  */
 #define ASM_MEDIA_FMT_SBC                         0x00010BF2
+#define ASM_MEDIA_FMT_SBC_SS                      0x00010BF5
 
 /* SBC channel Mono mode.*/
 #define ASM_MEDIA_FMT_SBC_CHANNEL_MODE_MONO                     1
@@ -4321,6 +4327,11 @@ struct asm_sbc_enc_cfg_t {
 	 */
 	uint32_t    sample_rate;
 };
+
+struct asm_ss_sbc_enc_cfg_t {
+	struct asm_sbc_enc_cfg_t custom_config;
+	struct afe_abr_enc_cfg_t abr_config;
+} __packed;
 
 #define ASM_MEDIA_FMT_AAC_AOT_LC            2
 #define ASM_MEDIA_FMT_AAC_AOT_SBR           5
@@ -4563,6 +4574,22 @@ struct asm_ldac_enc_cfg_t {
 	struct afe_abr_enc_cfg_t abr_config;
 } __packed;
 
+/* FMT ID for SSC */
+#define ASM_MEDIA_FMT_SSC 0x00010BF3
+
+struct asm_custom_enc_cfg_ssc_t {
+	uint32_t    sample_rate;
+	/* Mono or stereo */
+	uint16_t    num_channels;
+	uint16_t    reserved;
+	/* num_ch == 1, then PCM_CHANNEL_C,
+	 * num_ch == 2, then {PCM_CHANNEL_L, PCM_CHANNEL_R}
+	 */
+	uint8_t     channel_mapping[8];
+	uint32_t    custom_size;
+	struct afe_abr_enc_cfg_t abr_config;
+} __packed;
+
 struct afe_enc_fmt_id_param_t {
 	/*
 	 * Supported values:
@@ -4752,12 +4779,14 @@ struct asm_aptx_ad_speech_dec_cfg_t {
 
 union afe_enc_config_data {
 	struct asm_sbc_enc_cfg_t sbc_config;
+	struct asm_ss_sbc_enc_cfg_t ss_sbc_config;
 	struct asm_aac_enc_cfg_t aac_config;
 	struct asm_custom_enc_cfg_t  custom_config;
 	struct asm_celt_enc_cfg_t  celt_config;
 	struct asm_aptx_enc_cfg_t  aptx_config;
 	struct asm_ldac_enc_cfg_t  ldac_config;
 	struct asm_aptx_ad_enc_cfg_t  aptx_ad_config;
+	struct asm_custom_enc_cfg_ssc_t ssc_config;
 	struct asm_aptx_ad_speech_enc_cfg_t aptx_ad_speech_config;
 };
 
@@ -4855,6 +4884,8 @@ struct afe_enc_aptx_ad_speech_cfg_blk_param_t {
 struct afe_dec_media_fmt_t {
 	union afe_dec_config_data dec_media_config;
 } __packed;
+
+#define AVS_ENCODER_PARAM_ID_ENC_BITRATE 0x0001322D
 
 /*
  * Payload of the AVS_ENCODER_PARAM_ID_PACKETIZER_ID parameter.
@@ -6222,6 +6253,10 @@ struct asm_enc_cfg_blk_param_v2 {
  * this member.
  */
 
+} __packed;
+
+struct asm_bitrate_param_t {
+	u32 enc_bitrate;
 } __packed;
 
 struct asm_custom_enc_cfg_t_v2 {
@@ -12167,27 +12202,6 @@ struct afe_clk_set {
 	uint32_t enable;
 };
 
-#define AVS_BUILD_MAJOR_VERSION_V2		2
-#define AVS_BUILD_MINOR_VERSION_V9		9
-#define AVS_BUILD_BRANCH_VERSION_V3		3
-
-#define AFE_PARAM_ID_CLOCK_SET_V2		0x000102E6
-
-#define AFE_API_VERSION_CLOCK_SET_V2		0x1
-
-struct afe_param_id_clock_set_v2_t {
-	uint32_t	clk_set_minor_version;
-	uint32_t	clk_id;
-	uint32_t	clk_freq_in_hz;
-	uint16_t	clk_attri;
-	uint16_t	clk_root;
-	uint32_t	enable;
-	uint32_t	divider_2x;
-	uint32_t	m;
-	uint32_t	n;
-	uint32_t	d;
-};
-
 struct afe_clk_cfg {
 /* Minor version used for tracking the version of the I2S
  * configuration interface.
@@ -12228,15 +12242,16 @@ struct afe_clk_cfg {
 #define AFE_MODULE_CLOCK_SET		0x0001028F
 #define AFE_PARAM_ID_CLOCK_SET		0x00010290
 
-#define CLK_SRC_NAME_MAX 32
-
-enum {
-	CLK_SRC_INTEGRAL,
-	CLK_SRC_FRACT,
-	CLK_SRC_MAX
-};
-
 struct afe_set_clk_drift {
+	/*
+	 * Clock ID
+	 *	@values
+	 *	- 0x100 to 0x10E
+	 *	- 0x200 to 0x20C
+	 *	- 0x500 to 0x505
+	 */
+	uint32_t clk_id;
+
 	/*
 	 * Clock drift  (in PPB) to be set.
 	 *	@values
@@ -12245,20 +12260,12 @@ struct afe_set_clk_drift {
 	int32_t clk_drift;
 
 	/*
-	 * Clock reset.
+	 * Clock rest.
 	 *	@values
 	 *	- 1 -- Reset PLL with the original frequency
 	 *	- 0 -- Adjust the clock with the clk drift value
 	 */
 	uint32_t clk_reset;
-	/*
-	 * Clock src name.
-	 *  @values
-	 *  - values to be set from machine driver
-	 *  - LPAPLL0 -- integral clk src
-	 *  - LPAPLL2 -- fractional clk src
-	 */
-	char clk_src_name[CLK_SRC_NAME_MAX];
 } __packed;
 
 /* This param id is used to adjust audio interface PLL*/

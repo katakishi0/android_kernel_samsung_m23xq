@@ -449,10 +449,7 @@ class IntegrityRoutine(ELF):
 
         if len(addrs_for_hmac) < 4096:
             digest = self.get_hmac(addrs_for_hmac, "The quick brown fox jumps over the lazy dog")
-            
-        if self.embed_bytes(self.get_symbol_by_name_rodata("builtime_" + module_name + "_hmac") is None:
-            return
-        
+
             self.embed_bytes(self.get_symbol_by_name_rodata("builtime_" + module_name + "_hmac").addr,
                              self.utils.to_bytearray(digest))
 
