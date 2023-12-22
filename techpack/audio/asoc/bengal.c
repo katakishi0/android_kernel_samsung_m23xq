@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0-only
 /*
- * Copyright (c) 2016-2021, The Linux Foundation. All rights reserved.
+ * Copyright (c) 2016-2020, The Linux Foundation. All rights reserved.
  */
 
 #include <linux/clk.h>
@@ -161,9 +161,6 @@ struct msm_asoc_mach_data {
 	bool is_afe_config_done;
 	struct device_node *fsa_handle;
 	bool va_disable;
-#ifdef CONFIG_T2M_SND_FP4
-    struct device_node *hac_pa_gpio_p;
-#endif
 };
 
 struct tdm_port {
@@ -558,7 +555,6 @@ static struct snd_soc_codec_conf *msm_codec_conf;
 static struct snd_soc_card snd_soc_card_bengal_msm;
 static int dmic_0_1_gpio_cnt;
 static int dmic_2_3_gpio_cnt;
-static u32 wcd_datalane_mismatch;
 
 static void *def_wcd_mbhc_cal(void);
 static void *def_rouleur_mbhc_cal(void);
@@ -589,35 +585,6 @@ static struct wcd_mbhc_config wcd_mbhc_cfg = {
 	.enable_anc_mic_detect = false,
 	.moisture_duty_cycle_en = true,
 };
-
-#ifdef CONFIG_T2M_SND_FP4
-static int msm_enable_hac_pa(struct snd_soc_dapm_widget *w,
-                       struct snd_kcontrol *kcontrol,
-                       int event);
-
-static const struct snd_kcontrol_new hac_pa_switch[] = {
-    SOC_DAPM_SINGLE("Switch", SND_SOC_NOPM, 0, 1, 0)
-};
-
-static const struct snd_soc_dapm_widget msm_hac_dapm_widgets[] = {
-    SND_SOC_DAPM_MIXER("HAC_PA", SND_SOC_NOPM, 0, 0,
-               hac_pa_switch, ARRAY_SIZE(hac_pa_switch)),
-    SND_SOC_DAPM_PGA_E("HAC PGA", SND_SOC_NOPM, 0, 0, NULL, 0,
-                msm_enable_hac_pa,
-                SND_SOC_DAPM_PRE_PMU | SND_SOC_DAPM_POST_PMU |
-                SND_SOC_DAPM_PRE_PMD | SND_SOC_DAPM_POST_PMD),
-
-
-    SND_SOC_DAPM_INPUT("HAC_RX"),
-    SND_SOC_DAPM_OUTPUT("HAC"),
-};
-
-static const struct snd_soc_dapm_route msm_hac_audio_map[] = {
-    {"HAC_PA", "Switch", "HAC_RX"},
-    {"HAC PGA", NULL, "HAC_PA"},
-    {"HAC", NULL, "HAC PGA"},
-};
-#endif
 
 static inline int param_is_mask(int p)
 {
@@ -4232,43 +4199,6 @@ static int msm_dmic_event(struct snd_soc_dapm_widget *w,
 	return 0;
 }
 
-#ifdef CONFIG_T2M_SND_FP4
-static int msm_enable_hac_pa(struct snd_soc_dapm_widget *w,
-                       struct snd_kcontrol *kcontrol,
-                       int event)
-{
-    struct snd_soc_component *component =
-                    snd_soc_dapm_to_component(w->dapm);
-    struct msm_asoc_mach_data *pdata = NULL;
-    int ret = 0;
-
-    dev_dbg(component->dev, "%s wname: %s event: %d\n", __func__,
-        w->name, event);
-
-    pdata = snd_soc_card_get_drvdata(component->card);
-
-    switch (event) {
-    case SND_SOC_DAPM_POST_PMU:
-        ret = msm_cdc_pinctrl_select_active_state(
-                    pdata->hac_pa_gpio_p);
-        if (ret) {
-            pr_err("%s: gpio set cannot be de-activated %s\n",
-                    __func__, "hac_pa");
-        }
-        break;
-    case SND_SOC_DAPM_PRE_PMD:
-        ret = msm_cdc_pinctrl_select_sleep_state(
-                    pdata->hac_pa_gpio_p);
-        if (ret) {
-            pr_err("%s: gpio set cannot be de-activated %s\n",
-                    __func__, "hac_pa");
-        }
-        break;
-    };
-    return ret;
-}
-#endif
-
 static const struct snd_soc_dapm_widget msm_int_dapm_widgets[] = {
 	SND_SOC_DAPM_MIC("Analog Mic1", NULL),
 	SND_SOC_DAPM_MIC("Analog Mic2", NULL),
@@ -4373,16 +4303,6 @@ static int msm_int_audrx_init(struct snd_soc_pcm_runtime *rtd)
 	snd_soc_dapm_new_controls(dapm, msm_int_dapm_widgets,
 				ARRAY_SIZE(msm_int_dapm_widgets));
 
-#ifdef CONFIG_T2M_SND_FP4
-    snd_soc_dapm_new_controls(dapm, msm_hac_dapm_widgets,
-                ARRAY_SIZE(msm_hac_dapm_widgets));
-
-    snd_soc_dapm_add_routes(dapm, msm_hac_audio_map,
-                    ARRAY_SIZE(msm_hac_audio_map));
-
-    snd_soc_dapm_ignore_suspend(dapm, "HAC");
-#endif
-
 	snd_soc_dapm_ignore_suspend(dapm, "Digital Mic0");
 	snd_soc_dapm_ignore_suspend(dapm, "Digital Mic1");
 	snd_soc_dapm_ignore_suspend(dapm, "Digital Mic2");
@@ -4410,11 +4330,7 @@ static int msm_int_audrx_init(struct snd_soc_pcm_runtime *rtd)
 				data = (char*) of_device_get_match_data(
 								&pdev->dev);
 			if (data != NULL) {
-				if (wcd_datalane_mismatch) {
-					bolero_set_port_map(component,
-						ARRAY_SIZE(sm_port_map_khaje),
-						sm_port_map_khaje);
-				} else if (!strncmp(data, "wcd937x",
+				if (!strncmp(data, "wcd937x",
 						sizeof("wcd937x"))) {
 					bolero_set_port_map(component,
 						ARRAY_SIZE(sm_port_map),
@@ -4507,20 +4423,7 @@ static void *def_rouleur_mbhc_cal(void)
 
 	return wcd_mbhc_cal;
 }
-#ifdef CONFIG_T2M_SND_FP4
-struct snd_soc_dai_link_component awinic_codecs[] = {
-	{
-		.of_node = NULL,
-		.dai_name = "aw881xx-aif-0-34",
-		.name = "aw881xx_smartpa.0-0034",
-	},
-	{
-		.of_node = NULL,
-		.dai_name = "aw881xx-aif-0-36",
-		.name = "aw881xx_smartpa.0-0036",
-	},
-};
-#endif
+
 /* Digital audio interface glue - connects codec <---> CPU */
 static struct snd_soc_dai_link msm_common_dai_links[] = {
 	/* FrontEnd DAI Links */
@@ -5150,38 +5053,6 @@ static struct snd_soc_dai_link msm_common_misc_fe_dai_links[] = {
 		.no_host_mode = SND_SOC_DAI_LINK_NO_HOST,
 		.ops = &msm_cdc_dma_be_ops,
 	},
-/*#if defined(CONFIG_T2M_SND_FP4)
-	{
-		.name = "Quinary MI2S RX_Hostless",
-		.stream_name = "Quinary MI2S_RX Hostless Playback",
-		.cpu_dai_name = "QUIN_MI2S_RX_HOSTLESS",
-		.platform_name = "msm-pcm-hostless",
-		.dynamic = 1,
-		.dpcm_playback = 1,
-		.trigger = {SND_SOC_DPCM_TRIGGER_POST,
-			SND_SOC_DPCM_TRIGGER_POST},
-		.no_host_mode = SND_SOC_DAI_LINK_NO_HOST,
-		.ignore_suspend = 1,
-		.ignore_pmdown_time = 1,
-		.codec_dai_name = "snd-soc-dummy-dai",
-		.codec_name = "snd-soc-dummy",
-	},
-	{
-		.name = "Quinary MI2S TX_Hostless",
-		.stream_name = "Quinary MI2S_TX Hostless Capture",
-		.cpu_dai_name = "QUIN_MI2S_RX_HOSTLESS",
-		.platform_name = "msm-pcm-hostless",
-		.dynamic = 1,
-		.dpcm_capture = 1,
-		.trigger = {SND_SOC_DPCM_TRIGGER_POST,
-			SND_SOC_DPCM_TRIGGER_POST},
-		.no_host_mode = SND_SOC_DAI_LINK_NO_HOST,
-		.ignore_suspend = 1,
-		.ignore_pmdown_time = 1,
-		.codec_dai_name = "snd-soc-dummy-dai",
-		.codec_name = "snd-soc-dummy",
-	},
-#endif*/
 };
 
 static struct snd_soc_dai_link msm_common_be_dai_links[] = {
@@ -5499,20 +5370,7 @@ static struct snd_soc_dai_link msm_wcn_btfm_be_dai_links[] = {
 		.ignore_suspend = 1,
 	},
 };
-#if defined(CONFIG_T2M_SND_FP4)
-struct snd_soc_dai_link_component awinic_codecs[] = {
-    {
-        .of_node = NULL,
-        .dai_name = "aw882xx-aif-l",
-        .name = "aw882xx_smartpa_l",
-    },
-    {
-        .of_node = NULL,
-        .dai_name = "aw882xx-aif-r",
-        .name = "aw882xx_smartpa_r",
-    },
-};
-#endif
+
 static struct snd_soc_dai_link msm_mi2s_be_dai_links[] = {
 	{
 		.name = LPASS_BE_PRI_MI2S_RX,
@@ -6818,37 +6676,6 @@ static int msm_audio_ssr_register(struct device *dev)
 	return ret;
 }
 
-#ifdef CONFIG_T2M_SND_FP4
-int is_hac_pa_gpio_support(struct platform_device *pdev,
-            struct msm_asoc_mach_data *pdata)
-{
-    const char *hac_pa_gpio = "qcom,msm-hac-pa-gpios";
-    int ret = 0;
-
-    pr_debug("%s:Enter\n", __func__);
-
-    pdata->hac_pa_gpio_p= of_parse_phandle(pdev->dev.of_node,
-                    hac_pa_gpio, 0);
-    if (!pdata->hac_pa_gpio_p) {
-        dev_dbg(&pdev->dev, "property %s not detected in node %s",
-            hac_pa_gpio, pdev->dev.of_node->full_name);
-    } else {
-        dev_dbg(&pdev->dev, "%s detected",
-            hac_pa_gpio);
-        if (pdata->hac_pa_gpio_p) {
-            ret = msm_cdc_pinctrl_select_sleep_state(
-                        pdata->hac_pa_gpio_p);
-            if (ret) {
-                pr_err("%s: gpio set cannot be de-activated %s\n",
-                        __func__, "hac_pa");
-            }
-        }
-    }
-
-    return 0;
-}
-#endif
-
 static int msm_asoc_machine_probe(struct platform_device *pdev)
 {
 	struct snd_soc_card *card = NULL;
@@ -6907,10 +6734,6 @@ static int msm_asoc_machine_probe(struct platform_device *pdev)
 	ret = msm_init_aux_dev(pdev, card);
 	if (ret)
 		goto err;
-
-	ret = of_property_read_u32(pdev->dev.of_node,
-			"qcom,wcd-datalane-mismatch",
-			&wcd_datalane_mismatch);
 
 	ret = devm_snd_soc_register_card(&pdev->dev, card);
 	if (ret == -EPROBE_DEFER) {
@@ -6978,12 +6801,7 @@ static int msm_asoc_machine_probe(struct platform_device *pdev)
 			"qcom,us-euro-gpios");
 		wcd_mbhc_cfg.swap_gnd_mic = msm_swap_gnd_mic;
 	}
-#ifdef CONFIG_T2M_SND_FP4
-    ret = is_hac_pa_gpio_support(pdev, pdata);
-    if (ret < 0)
-        pr_err("%s:  doesn't support hac pa gpio\n",
-                __func__);
-#endif
+
 	if (wcd_mbhc_cfg.enable_usbc_analog)
 		wcd_mbhc_cfg.swap_gnd_mic = msm_usbc_swap_gnd_mic;
 

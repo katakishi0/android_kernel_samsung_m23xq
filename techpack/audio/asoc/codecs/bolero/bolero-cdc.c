@@ -250,6 +250,14 @@ static int bolero_cdc_update_wcd_event(void *handle, u16 event, u32 data)
 				priv->component,
 				BOLERO_MACRO_EVT_HPHR_HD2_ENABLE, data);
 		break;
+#ifdef CONFIG_SND_SOC_IMPED_SENSING
+	case SEC_WCD_BOLERO_EVT_IMPED_TRUE:
+		if (priv->macro_params[RX_MACRO].event_handler)
+			priv->macro_params[RX_MACRO].event_handler(
+				priv->component,
+				SEC_BOLERO_MACRO_EVT_IMPED_TRUE, data);
+		break;
+#endif
 	default:
 		dev_err(priv->dev, "%s: Invalid event %d trigger from wcd\n",
 			__func__, event);
@@ -1379,6 +1387,7 @@ static int bolero_probe(struct platform_device *pdev)
 	mutex_init(&priv->vote_lock);
 	INIT_WORK(&priv->bolero_add_child_devices_work,
 		  bolero_add_child_devices);
+	schedule_work(&priv->bolero_add_child_devices_work);
 
 	/* Register LPASS core hw vote */
 	lpass_core_hw_vote = devm_clk_get(&pdev->dev, "lpass_core_hw_vote");
@@ -1402,7 +1411,6 @@ static int bolero_probe(struct platform_device *pdev)
 	}
 	priv->lpass_audio_hw_vote = lpass_audio_hw_vote;
 
-	schedule_work(&priv->bolero_add_child_devices_work);
 	return 0;
 }
 

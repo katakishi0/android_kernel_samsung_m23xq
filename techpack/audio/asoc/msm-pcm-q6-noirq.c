@@ -153,8 +153,6 @@ static const struct soc_enum msm_pcm_fe_topology_enum[] = {
 static void event_handler(uint32_t opcode,
 		uint32_t token, uint32_t *payload, void *priv)
 {
-	struct msm_audio *prtd = priv;
-	struct snd_pcm_substream *substream;
 	uint32_t *ptrmem = (uint32_t *)payload;
 
 	switch (opcode) {
@@ -172,18 +170,6 @@ static void event_handler(uint32_t opcode,
 		default:
 			break;
 		}
-		break;
-	case RESET_EVENTS:
-		if (!prtd || !prtd->substream) {
-			pr_err("%s: prtd or substream is NULL\n", __func__);
-			return;
-		}
-		substream = prtd->substream;
-		if (!substream->runtime || !substream->runtime->status) {
-			pr_err("%s: runtime or runtime->status is NULL\n", __func__);
-			return;
-		}
-		substream->runtime->status->state = SNDRV_PCM_STATE_DISCONNECTED;
 		break;
 	default:
 		pr_debug("Not Supported Event opcode[0x%x]\n", opcode);
@@ -625,7 +611,11 @@ static int msm_pcm_prepare(struct snd_pcm_substream *substream)
 	struct snd_pcm_runtime *runtime = substream->runtime;
 	struct msm_audio *prtd = runtime->private_data;
 	struct asm_softvolume_params softvol = {
+#ifdef CONFIG_SND_SOC_SAMSUNG_AUDIO
+		.period = SOFT_VOLUME_MMAP_PERIOD,
+#else
 		.period = SOFT_VOLUME_PERIOD,
+#endif
 		.step = SOFT_VOLUME_STEP,
 		.rampingcurve = SOFT_VOLUME_CURVE_LINEAR,
 	};
