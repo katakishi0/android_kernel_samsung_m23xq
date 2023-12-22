@@ -7,16 +7,13 @@ config QCA_CLD_WLAN
 	help
 	  Add support for the Qualcomm Atheros CLD WLAN module
 
-if QCA_CLD_WLAN != n
-
 config QCA_CLD_WLAN_PROFILE
 	string "Configuration profile for Qualcomm Atheros CLD WLAN module"
+	depends on QCA_CLD_WLAN
 	default "default"
 	help
-	  Specify which configuration profile to be used for building
-	  this module.
-
-Profiles are located at drivers\net\wireless\qualcomm\wcn39xx\qcacld-3.0\configs.
+	  Specify which configuration profile to be used for building this module.
+	  Profiles are located at drivers/net/wireless/qualcomm/wcn39xx/qcacld-3.0/configs.
 
 config QCA_CLD_WLAN_DYNAMIC_SINGLE_CHIP_NAME
 	string "Dynamic single chip name for the Qualcomm Atheros CLD WLAN module"
@@ -29,5 +26,3 @@ config QCA_CLD_WLAN_DYNAMIC_SINGLE_CHIP_NAME
 	  certain subfolder.
 	  It will load from
 	  /vendor/firmware/wlan/qca_cld/<QCA_CLD_WLAN_DYNAMIC_SINGLE_CHIP_NAME>
-
-endif # QCA_CLD_WLAN
