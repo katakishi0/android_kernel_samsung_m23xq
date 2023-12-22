@@ -798,7 +798,6 @@ void dpm_noirq_end(void)
 {
 	resume_device_irqs();
 	device_wakeup_disarm_wake_irqs();
-	cpuidle_resume();
 }
 
 /**
@@ -1416,7 +1415,6 @@ static int device_suspend_noirq(struct device *dev)
 
 void dpm_noirq_begin(void)
 {
-	cpuidle_pause();
 	device_wakeup_arm_wake_irqs();
 	suspend_device_irqs();
 }
