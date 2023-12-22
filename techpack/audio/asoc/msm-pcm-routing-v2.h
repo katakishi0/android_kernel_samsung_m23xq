@@ -1,10 +1,13 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* Copyright (c) 2012-2021, The Linux Foundation. All rights reserved.
+/* Copyright (c) 2012-2020, The Linux Foundation. All rights reserved.
  */
 #ifndef _MSM_PCM_ROUTING_H
 #define _MSM_PCM_ROUTING_H
 #include <dsp/apr_audio-v2.h>
 #include <dsp/q6adm-v2.h>
+#ifdef CONFIG_SEC_SND_ADAPTATION
+#include <dsp/sec_adaptation.h>
+#endif
 
 /*
  * These names are used by HAL to specify the BE. If any changes are
@@ -212,7 +215,6 @@
 
 #define LPASS_BE_WSA_CDC_DMA_RX_0 "WSA_CDC_DMA_RX_0"
 #define LPASS_BE_WSA_CDC_DMA_TX_0 "WSA_CDC_DMA_TX_0"
-#define LPASS_BE_WSA_CDC_DMA_TX_0_VI "WSA_CDC_DMA_TX_0_VI"
 #define LPASS_BE_WSA_CDC_DMA_RX_1 "WSA_CDC_DMA_RX_1"
 #define LPASS_BE_WSA_CDC_DMA_TX_1 "WSA_CDC_DMA_TX_1"
 #define LPASS_BE_WSA_CDC_DMA_TX_2 "WSA_CDC_DMA_TX_2"
@@ -528,6 +530,7 @@ enum {
 	EXT_EC_REF_SLIM_1_TX,
 	EXT_EC_REF_PRI_TDM_TX,
 	EXT_EC_REF_SEC_TDM_TX,
+	EXT_EC_REF_QUAT_TDM_TX,
 };
 
 #define INVALID_SESSION -1
@@ -654,4 +657,8 @@ int msm_pcm_routing_set_channel_mixer_runtime(
 	int be_id, int session_id,
 	int session_type,
 	struct msm_pcm_channel_mixer *params);
+#ifdef CONFIG_SEC_SND_ADAPTATION
+int q6audio_get_copp_idx_from_port_id(int port_id, enum sb_type func_type,
+	int *copp_idx);
+#endif /* CONFIG_SEC_SND_ADAPTATION */
 #endif /*_MSM_PCM_H*/

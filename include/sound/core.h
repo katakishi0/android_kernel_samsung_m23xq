@@ -239,6 +239,10 @@ int snd_card_locked(int card);
 extern int (*snd_mixer_oss_notify_callback)(struct snd_card *card, int cmd);
 #endif
 
+#ifdef CONFIG_USB_AUDIO_ENHANCED_DETECT_TIME
+int get_next_snd_card_number(struct module *module);
+#endif
+
 int snd_card_new(struct device *parent, int idx, const char *xid,
 		 struct module *module, int extra_size,
 		 struct snd_card **card_ret);
@@ -448,13 +452,5 @@ snd_pci_quirk_lookup_id(u16 vendor, u16 device,
 	return NULL;
 }
 #endif
-
-/* async signal helpers */
-struct snd_fasync;
-
-int snd_fasync_helper(int fd, struct file *file, int on,
-		      struct snd_fasync **fasyncp);
-void snd_kill_fasync(struct snd_fasync *fasync, int signal, int poll);
-void snd_fasync_free(struct snd_fasync *fasync);
 
 #endif /* __SOUND_CORE_H */

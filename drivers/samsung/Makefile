@@ -9,7 +9,13 @@ obj-$(CONFIG_SEC_MISC)		+= misc/
 obj-$(CONFIG_SEC_QUEST)		+= quest/
 
 obj-$(CONFIG_SEC_DEBUG_TEST)	+= debug/
+<<<<<<< HEAD
 
 GCOV_PROFILE_sec_class.o		:=y
 
 obj-$(CONFIG_SAMSUNG_LMKD_DEBUG)		+= lmkd_debug.o
+=======
+GCOV_PROFILE_sec_class.o		:=y
+
+obj-$(CONFIG_SAMSUNG_LMKD_DEBUG)		+= lmkd_debug.o
+>>>>>>> cd571fb4a1fa... Rebased based on Samsung M236BXXS4CWI5 changes
