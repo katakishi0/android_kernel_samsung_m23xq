@@ -320,10 +320,7 @@ include scripts/subarch.include
 # Default value for CROSS_COMPILE is not to prefix executables
 # Note: Some architectures assign CROSS_COMPILE in their arch/*/Makefile
 ARCH		?= $(SUBARCH)
-<<<<<<< HEAD
-=======
 BUILD_CROSS_COMPILE		=${HOME}/aarch64-linux-android-4.9/bin/aarch64-linux-android-
->>>>>>> cd571fb4a1fa... Rebased based on Samsung M236BXXS4CWI5 changes
 
 # Architecture as present in compile.h
 UTS_MACHINE 	:= $(ARCH)
