@@ -1616,7 +1616,6 @@ static int sde_sspp_parse_dt(struct device_node *np,
 			sde_cfg->mdp[j].clk_ctrls[sspp->clk_ctrl].bit_off =
 				PROP_BITVALUE_ACCESS(prop_value,
 						SSPP_CLK_CTRL, i, 1);
-			sde_cfg->mdp[j].clk_ctrls[sspp->clk_ctrl].val = -1;
 		}
 
 		SDE_DEBUG(
