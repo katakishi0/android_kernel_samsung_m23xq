@@ -18,7 +18,7 @@ CONFIG_THREAD_INFO_IN_TASK=y
 # KernelSU
 #
 CONFIG_KSU=y
-# CONFIG_KSU_DEBUG is not set
+CONFIG_KSU_DEBUG=y
 # end of KernelSU
 
 #
