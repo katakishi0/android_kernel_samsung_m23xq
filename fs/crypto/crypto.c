@@ -20,6 +20,8 @@
  */
 
 #include <linux/pagemap.h>
+#include <linux/namei.h>
+#include <linux/dcache.h>
 #include <linux/mempool.h>
 #include <linux/module.h>
 #include <linux/scatterlist.h>
@@ -347,6 +349,11 @@ int fscrypt_decrypt_block_inplace(const struct inode *inode, struct page *page,
 
 
 EXPORT_SYMBOL(fscrypt_decrypt_block_inplace);
+
+const struct dentry_operations fscrypt_d_ops = {
+	.d_revalidate = fscrypt_d_revalidate,
+};
+EXPORT_SYMBOL(fscrypt_d_ops);
 
 /**
  * fscrypt_initialize() - allocate major buffers for fs encryption.
