@@ -1,4 +1,3 @@
-#ifdef CONFIG_MACH_M23XQ_EUR_OPEN
 dtbo-y += m23xq_eur_open_w00_r04.dtbo # ADDED BY LEGO AUTOMATICALLY: DO NOT SUBMIT
 m23xq_eur_open_w00_r04.dtbo-base := ../../../vendor/qcom/lagoon.dtb # ADDED BY LEGO AUTOMATICALLY: DO NOT SUBMIT
 dtbo-y += m23xq_eur_open_w00_r03.dtbo # ADDED BY LEGO AUTOMATICALLY: DO NOT SUBMIT
@@ -7,18 +6,6 @@ dtbo-y += m23xq_eur_open_w00_r01.dtbo # ADDED BY LEGO AUTOMATICALLY: DO NOT SUBM
 m23xq_eur_open_w00_r01.dtbo-base := ../../../vendor/qcom/lagoon.dtb # ADDED BY LEGO AUTOMATICALLY: DO NOT SUBMIT
 dtbo-y += m23xq_eur_open_w00_r00.dtbo # ADDED BY LEGO AUTOMATICALLY: DO NOT SUBMIT
 m23xq_eur_open_w00_r00.dtbo-base := ../../../vendor/qcom/lagoon.dtb # ADDED BY LEGO AUTOMATICALLY: DO NOT SUBMIT
-#endif
-
-#ifdef CONFIG_MACH_M23XQ_SWA_OPEN
-dtbo-y += m23xq_swa_open_w00_r04.dtbo # ADDED BY LEGO AUTOMATICALLY: DO NOT SUBMIT
-m23xq_swa_open_w00_r04.dtbo-base := ../../../vendor/qcom/lagoon.dtb # ADDED BY LEGO AUTOMATICALLY: DO NOT SUBMIT
-dtbo-y += m23xq_swa_open_w00_r03.dtbo # ADDED BY LEGO AUTOMATICALLY: DO NOT SUBMIT
-m23xq_swa_open_w00_r03.dtbo-base := ../../../vendor/qcom/lagoon.dtb # ADDED BY LEGO AUTOMATICALLY: DO NOT SUBMIT
-dtbo-y += m23xq_swa_open_w00_r01.dtbo # ADDED BY LEGO AUTOMATICALLY: DO NOT SUBMIT
-m23xq_swa_open_w00_r01.dtbo-base := ../../../vendor/qcom/lagoon.dtb # ADDED BY LEGO AUTOMATICALLY: DO NOT SUBMIT
-dtbo-y += m23xq_swa_open_w00_r00.dtbo # ADDED BY LEGO AUTOMATICALLY: DO NOT SUBMIT
-m23xq_swa_open_w00_r00.dtbo-base := ../../../vendor/qcom/lagoon.dtb # ADDED BY LEGO AUTOMATICALLY: DO NOT SUBMIT
-#endif
 
 dtbo-y += m23xq_eur_open_w00_r00.dtbo
 m23xq_eur_open_w00_r00.dtbo-base := ../../../vendor/qcom/lagoon.dtb
