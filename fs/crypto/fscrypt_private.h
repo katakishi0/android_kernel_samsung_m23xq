@@ -291,7 +291,6 @@ int fscrypt_crypt_block(const struct inode *inode, fscrypt_direction_t rw,
 			struct page *dest_page, unsigned int len,
 			unsigned int offs, gfp_t gfp_flags);
 struct page *fscrypt_alloc_bounce_page(gfp_t gfp_flags);
-extern const struct dentry_operations fscrypt_d_ops;
 
 void __printf(3, 4) __cold
 fscrypt_msg(const struct inode *inode, const char *level, const char *fmt, ...);

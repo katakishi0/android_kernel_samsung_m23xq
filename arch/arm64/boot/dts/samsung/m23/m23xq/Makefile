@@ -6,7 +6,6 @@ dtbo-y += m23xq_eur_open_w00_r01.dtbo # ADDED BY LEGO AUTOMATICALLY: DO NOT SUBM
 m23xq_eur_open_w00_r01.dtbo-base := ../../../vendor/qcom/lagoon.dtb # ADDED BY LEGO AUTOMATICALLY: DO NOT SUBMIT
 dtbo-y += m23xq_eur_open_w00_r00.dtbo # ADDED BY LEGO AUTOMATICALLY: DO NOT SUBMIT
 m23xq_eur_open_w00_r00.dtbo-base := ../../../vendor/qcom/lagoon.dtb # ADDED BY LEGO AUTOMATICALLY: DO NOT SUBMIT
-
 dtbo-y += m23xq_eur_open_w00_r00.dtbo
 m23xq_eur_open_w00_r00.dtbo-base := ../../../vendor/qcom/lagoon.dtb
 

@@ -857,18 +857,16 @@ static noinline struct btrfs_device *device_list_add(const char *path,
 				bdput(path_bdev);
 				mutex_unlock(&fs_devices->device_list_mutex);
 				btrfs_warn_in_rcu(device->fs_info,
-	"duplicate device %s devid %llu generation %llu scanned by %s (%d)",
-						  path, devid, found_transid,
-						  current->comm,
-						  task_pid_nr(current));
+			"duplicate device fsid:devid for %pU:%llu old:%s new:%s",
+					disk_super->fsid, devid,
+					rcu_str_deref(device->name), path);
 				return ERR_PTR(-EEXIST);
 			}
 			bdput(path_bdev);
 			btrfs_info_in_rcu(device->fs_info,
-	"devid %llu device path %s changed to %s scanned by %s (%d)",
-					  devid, rcu_str_deref(device->name),
-					  path, current->comm,
-					  task_pid_nr(current));
+				"device fsid %pU devid %llu moved old:%s new:%s",
+				disk_super->fsid, devid,
+				rcu_str_deref(device->name), path);
 		}
 
 		name = rcu_string_strdup(path, GFP_NOFS);

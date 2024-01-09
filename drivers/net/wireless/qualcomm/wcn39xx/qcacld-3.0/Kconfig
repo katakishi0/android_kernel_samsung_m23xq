@@ -7,6 +7,8 @@ config QCA_CLD_WLAN
 	help
 	Add support for the Qualcomm Atheros CLD WLAN module
 
+if QCA_CLD_WLAN != n
+
 config QCACLD_WLAN_LFR3
 	bool "Enable the WLAN Legacy Fast Roaming feature Version 3"
 	default n
@@ -148,3 +150,5 @@ config WLAN_FEATURE_DFS_OFFLOAD
 config WLAN_FEATURE_SARV1_TO_SARV2
 	bool "Enable conversion of SAR v1 to v2 feature"
 	default n
+
+endif # QCA_CLD_WLAN

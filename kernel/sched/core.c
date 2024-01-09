@@ -36,7 +36,7 @@ DEFINE_PER_CPU_SHARED_ALIGNED(struct rq, runqueues);
 unsigned long get_max_fps_util(int group_id);
 #endif /* CONFIG_FPS */
 
-#ifdef CONFIG_SCHED_DEBUG
+#if defined(CONFIG_SCHED_DEBUG) && defined(CONFIG_JUMP_LABEL)
 /*
  * Debugging: various feature bits
  *
