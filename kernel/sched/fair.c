@@ -85,8 +85,8 @@ walt_dec_cfs_rq_stats(struct cfs_rq *cfs_rq, struct task_struct *p) {}
  *
  * (default: 6ms * (1 + ilog(ncpus)), units: nanoseconds)
  */
-unsigned int sysctl_sched_latency			= 6000000ULL;
-unsigned int normalized_sysctl_sched_latency		= 6000000ULL;
+unsigned int sysctl_sched_latency			= 12000000ULL;
+unsigned int normalized_sysctl_sched_latency		= 12000000ULL;
 
 /*
  * Enable/disable honoring sync flag in energy-aware wakeups.
@@ -129,7 +129,7 @@ unsigned int normalized_sysctl_sched_min_granularity	= 500000ULL;
 /*
  * This value is kept at sysctl_sched_latency/sysctl_sched_min_granularity
  */
-static unsigned int sched_nr_latency = 6;
+static unsigned int sched_nr_latency = 5;
 
 /*
  * After fork, child runs first. If set to 0 (default) then
@@ -149,7 +149,7 @@ unsigned int sysctl_sched_child_runs_first __read_mostly;
 unsigned int sysctl_sched_wakeup_granularity		= 1000000UL;
 unsigned int normalized_sysctl_sched_wakeup_granularity	= 1000000UL;
 
-const_debug unsigned int sysctl_sched_migration_cost	= 500000UL;
+const_debug unsigned int sysctl_sched_migration_cost	= -1;
 DEFINE_PER_CPU_READ_MOSTLY(int, sched_load_boost);
 
 #ifdef CONFIG_SMP
@@ -8748,6 +8748,8 @@ static int task_hot(struct task_struct *p, struct lb_env *env)
 {
 	s64 delta;
 
+	return 1;
+#if 0
 	lockdep_assert_held(&env->src_rq->lock);
 
 	if (p->sched_class != &fair_sched_class)
@@ -8759,10 +8761,12 @@ static int task_hot(struct task_struct *p, struct lb_env *env)
 	/*
 	 * Buddy candidates are cache hot:
 	 */
-	if (sched_feat(CACHE_HOT_BUDDY) && env->dst_rq->nr_running &&
+#if SCHED_FEAT_CACHE_HOT_BUDDY
+	if (env->dst_rq->nr_running &&
 			(&p->se == cfs_rq_of(&p->se)->next ||
 			 &p->se == cfs_rq_of(&p->se)->last))
 		return 1;
+#endif
 
 	if (sysctl_sched_migration_cost == -1)
 		return 1;
@@ -8772,6 +8776,7 @@ static int task_hot(struct task_struct *p, struct lb_env *env)
 	delta = rq_clock_task(env->src_rq) - p->se.exec_start;
 
 	return delta < (s64)sysctl_sched_migration_cost;
+#endif
 }
 
 #ifdef CONFIG_NUMA_BALANCING
