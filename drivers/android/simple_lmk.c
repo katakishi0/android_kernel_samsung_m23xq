@@ -65,6 +65,17 @@ static int victim_size_cmp(const void *lhs_ptr, const void *rhs_ptr)
 	return rhs->size - lhs->size;
 }
 
+static unsigned long get_total_mm_pages(struct mm_struct *mm)
+{
+	unsigned long pages = 0;
+	int i;
+
+	for (i = 0; i < NR_MM_COUNTERS; i++)
+		pages += get_mm_counter(mm, i);
+
+	return pages;
+}
+
 static bool vtsk_is_duplicate(int vlen, struct task_struct *vtsk)
 {
 	int i;
