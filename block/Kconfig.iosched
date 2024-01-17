@@ -3,6 +3,20 @@ if BLOCK
 
 menu "IO Schedulers"
 
+config MQ_IOSCHED_SSG
+	tristate "SamSung Generic I/O scheduler"
+	default n
+	help
+	  SamSung Generic IO scheduler.
+
+config MQ_IOSCHED_SSG_CGROUP
+	tristate "Control Group for Samsung Generic I/O scheduler"
+	default n
+	depends on BLK_CGROUP
+	depends on MQ_IOSCHED_SSG
+	help
+	  Control Group for Samsung Generic IO scheduler.
+
 config IOSCHED_NOOP
 	bool
 	default y
