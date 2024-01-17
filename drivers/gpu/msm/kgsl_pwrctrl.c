@@ -15,6 +15,7 @@
 #include "kgsl_device.h"
 #include "kgsl_pwrscale.h"
 #include "kgsl_trace.h"
+#include "kgsl_trace_power.h"
 
 #define KGSL_PWRFLAGS_POWER_ON 0
 #define KGSL_PWRFLAGS_CLK_ON   1
@@ -555,6 +556,7 @@ unsigned int kgsl_pwrctrl_adjust_pwrlevel(struct kgsl_device *device,
 				unsigned int new_level)
 {
 	struct kgsl_pwrctrl *pwr = &device->pwrctrl;
+	unsigned int old_level = pwr->active_pwrlevel;
 
 	/* If a pwr constraint is expired, remove it */
 	if ((pwr->constraint.type != KGSL_CONSTRAINT_NONE) &&
