@@ -865,7 +865,7 @@ static int kgsl_iommu_fault_handler(struct iommu_domain *domain,
 				dev_err(ctx->kgsldev->dev, "*EMPTY*\n");
 		}
 
-
+#if 0
 #if defined(CONFIG_DISPLAY_SAMSUNG)
 #if defined(CONFIG_SEC_ABC)
 		sec_abc_send_event("MODULE=gpu_qc@ERROR=gpu_page_fault");
@@ -880,6 +880,7 @@ static int kgsl_iommu_fault_handler(struct iommu_domain *domain,
 			kgsl_svm_addr_mapping_log(device, ptname);
 			kgsl_svm_addr_mapping_check(ptname, addr);
 		}
+#endif
 #endif
 	}
 

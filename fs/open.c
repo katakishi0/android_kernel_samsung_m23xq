@@ -33,7 +33,6 @@
 #include <linux/compat.h>
 
 #include "internal.h"
-#include "file_blocker.h"
 
 #ifdef CONFIG_SECURITY_DEFEX
 #include <linux/defex.h>
