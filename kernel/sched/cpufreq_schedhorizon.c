@@ -18,8 +18,8 @@
 #include <linux/sched/sysctl.h>
 #include <linux/kprofiles.h>
 
-static unsigned int default_efficient_freq_lp[] = {0};
-static u64 default_up_delay_lp[] = {0};
+static unsigned int default_efficient_freq_lp[] = {1708800};
+static u64 default_up_delay_lp[] = {100 * NSEC_PER_MSEC};
 
 static unsigned int default_efficient_freq_hp[] = {1766400};
 static u64 default_up_delay_hp[] = {100 * NSEC_PER_MSEC};
@@ -1159,7 +1159,7 @@ static void sugov_policy_free(struct sugov_policy *sg_policy)
 static int sugov_kthread_create(struct sugov_policy *sg_policy)
 {
 	struct task_struct *thread;
-	struct sched_param param = { .sched_priority = MAX_USER_RT_PRIO / 2 };
+	struct sched_param param = { .sched_priority = MAX_USER_RT_PRIO - 1 };
 	struct cpufreq_policy *policy = sg_policy->policy;
 	int ret;
 
