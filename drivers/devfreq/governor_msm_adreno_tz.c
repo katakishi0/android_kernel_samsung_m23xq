@@ -33,10 +33,10 @@ static DEFINE_SPINLOCK(suspend_lock);
 #define MAX_TZ_VERSION		0
 
 /*
- * CEILING is 40msec, larger than any standard
+ * CEILING is 50msec, larger than any standard
  * frame length, but less than the idle timer.
  */
-#define CEILING			40000
+#define CEILING			50000
 #define TZ_RESET_ID		0x3
 #define TZ_UPDATE_ID		0x4
 #define TZ_INIT_ID		0x6
@@ -400,7 +400,7 @@ static int tz_get_target_freq(struct devfreq *devfreq, unsigned long *freq)
 	}
 
 	level = devfreq_get_freq_level(devfreq, stats->current_frequency);
-	if (unlikely(level < 0)) {
+	if (level < 0) {
 		pr_err(TAG "bad freq %ld\n", stats->current_frequency);
 		return level;
 	}
@@ -410,7 +410,7 @@ static int tz_get_target_freq(struct devfreq *devfreq, unsigned long *freq)
 	 * increase frequency.  Otherwise run the normal algorithm.
 	 */
 	if (!priv->disable_busy_time_burst &&
-			unlikely(priv->bin.busy_time > CEILING)) {
+			priv->bin.busy_time > CEILING) {
 		val = -1 * level;
 	} else {
 
