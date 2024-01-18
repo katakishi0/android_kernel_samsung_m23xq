@@ -396,14 +396,6 @@ extern int adreno_idler(struct devfreq_dev_status stats, struct devfreq *devfreq
 		 unsigned long *freq);
 #endif
 
-// mapping gpu level calculated linear conservation half curve values into a
-// half bell curve of conservation
-static int conservation_map[] = {0,1,2,5,6,9,14     ,17,20,25};
-
-// for boost == 4
-static int lvl_multiplicator_map_4[] = {10,1,1,1,1,11,9    ,1,1};
-static int lvl_divider_map_4[] = {10,1,1,1,1,15,13    ,1,1};
-
 static int tz_get_target_freq(struct devfreq *devfreq, unsigned long *freq)
 {
 	int result = 0;
@@ -439,6 +431,7 @@ static int tz_get_target_freq(struct devfreq *devfreq, unsigned long *freq)
 
 	// scale busy time up based on adrenoboost parameter, only if MIN_BUSY exceeded...
 	if ((unsigned int)(priv->bin.busy_time + stats.busy_time) >= MIN_BUSY) {
+<<<<<<< HEAD
 		if (adrenoboost <= 1) {
 			priv->bin.busy_time += stats.busy_time * ( 1 + adrenoboost );
 		} else
@@ -450,6 +443,9 @@ static int tz_get_target_freq(struct devfreq *devfreq, unsigned long *freq)
 		} else {
 			priv->bin.busy_time += (unsigned int)((stats.busy_time * ( 1 + adrenoboost ) * lvl_multiplicator_map_4[ last_level ]  * 9 ) / (lvl_divider_map_4[ last_level ] * 10));
 		}
+=======
+		priv->bin.busy_time += stats.busy_time * (1 + (adrenoboost*3)/2);
+>>>>>>> parent of 806ffc97a35d... gpu: devfreq: adrenoboost: adding conservative governor
 	} else {
 		priv->bin.busy_time += stats.busy_time;
 	}
@@ -502,29 +498,10 @@ static int tz_get_target_freq(struct devfreq *devfreq, unsigned long *freq)
 	 * If the decision is to move to a different level, make sure the GPU
 	 * frequency changes.
 	 */
-	if (!adrenoboost && val) {
+	if (val) {
 		level += val;
 		level = max(level, 0);
 		level = min_t(int, level, devfreq->profile->max_state - 1);
-	} else {
-		if (val) {
-			priv->bin.cycles_keeping_level += 1 + abs(val/2); // higher value change quantity means more addition to cycles_keeping_level for easier switching
-			// going upwards in frequency -- make it harder on the low and high freqs, middle ground - let it move
-			if (val<0 && priv->bin.cycles_keeping_level < conservation_map[ abs((priv->bin.last_level * 2) - max_state_val) ]) {
-			} else
-			// going downwards in frequency let it happen hard in the middle freqs
-			if (val>0 && priv->bin.cycles_keeping_level < conservation_map[ (max_state_val - abs((priv->bin.last_level * 2) - max_state_val )) ])  {
-			} else
-			{
-				// reset keep cylcles timer
-				priv->bin.cycles_keeping_level = 0;
-				// set new last level
-				priv->bin.last_level = level;
-				level += val;
-				level = max(level, 0);
-				level = min_t(int, level, devfreq->profile->max_state - 1);
-			}
-		}
 	}
 
 	*freq = devfreq->profile->freq_table[level];
