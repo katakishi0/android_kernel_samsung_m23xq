@@ -52,14 +52,7 @@ static DEFINE_SPINLOCK(suspend_lock);
 
 #define TAG "msm_adreno_tz: "
 
-bool adrenoboost_enabled = true;
-module_param(adrenoboost_enabled, bool, 0755);
-
-if (!adrenoboost_enabled) {
-static unsigned int adrenoboost = 0;
-} else {
 static unsigned int adrenoboost = 1;
-}
 
 static u64 suspend_time;
 static u64 suspend_start;
@@ -90,7 +83,7 @@ u64 suspend_time_ms(void)
 	suspend_start = suspend_sampling_time;
 	return time_diff;
 }
-if (adrenoboost_enabled) {
+
 static ssize_t adrenoboost_show(struct device *dev,
 		struct device_attribute *attr, char *buf)
 {
@@ -117,7 +110,7 @@ static ssize_t adrenoboost_save(struct device *dev,
 
 	return count;
 }
-}
+
 static ssize_t gpu_load_show(struct device *dev,
 		struct device_attribute *attr,
 		char *buf)
@@ -164,10 +157,8 @@ static ssize_t suspend_time_show(struct device *dev,
 	return snprintf(buf, PAGE_SIZE, "%llu\n", time_diff);
 }
 
-if (adrenoboost_enabled) {
 static DEVICE_ATTR(adrenoboost, 0644,
 		adrenoboost_show, adrenoboost_save);
-}
 
 static DEVICE_ATTR_RO(gpu_load);
 
@@ -176,9 +167,7 @@ static DEVICE_ATTR_RO(suspend_time);
 static const struct device_attribute *adreno_tz_attr_list[] = {
 		&dev_attr_gpu_load,
 		&dev_attr_suspend_time,
-		if (adrenoboost_enabled) {
 		&dev_attr_adrenoboost,
-		}
 		NULL
 };
 
@@ -463,7 +452,6 @@ static int tz_get_target_freq(struct devfreq *devfreq, unsigned long *freq)
 
 	priv->bin.total_time += stats->total_time;
 
-	if (adrenoboost_enabled) {
 	// scale busy time up based on adrenoboost parameter, only if MIN_BUSY exceeded...
 	if ((unsigned int)(priv->bin.busy_time + stats.busy_time) >= MIN_BUSY && adrenoboost) {
 		if (adrenoboost == 1) {
@@ -478,7 +466,8 @@ static int tz_get_target_freq(struct devfreq *devfreq, unsigned long *freq)
 	} else {
 		priv->bin.busy_time += stats.busy_time;
 	}
-	}
+
+	priv->bin.busy_time += stats->busy_time;
 
 	if (stats->private_data)
 		context_count =  *((int *)stats->private_data);
@@ -514,13 +503,7 @@ static int tz_get_target_freq(struct devfreq *devfreq, unsigned long *freq)
 
 		scm_data[0] = level;
 		scm_data[1] = priv->bin.total_time;
-
-		if (!adrenoboost_enabled) {
-		scm_data[2] = priv->bin.busy_time;
-		} else {
 		scm_data[2] = priv->bin.busy_time + (level * adrenoboost);
-		}
-
 		scm_data[3] = context_count;
 		__secure_tz_update_entry3(scm_data, sizeof(scm_data),
 					&val, sizeof(val), priv);
@@ -528,62 +511,35 @@ static int tz_get_target_freq(struct devfreq *devfreq, unsigned long *freq)
 	priv->bin.total_time = 0;
 	priv->bin.busy_time = 0;
 
-	if (!adrenoboost_enabled) {
-		/*
-	 	* If the decision is to move to a different level, make sure the GPU
-	 	* frequency changes.
-	 	*/
-		if (val) {
-			level += val;
-			level = max(level, 0);
-			level = min_t(int, level, devfreq->profile->max_state - 1);
-		} else {
-			if (val) {
-				priv->bin.cycles_keeping_level += 1 + abs(val/2); // higher value change quantity means more addition to cycles_keeping_level for easier switching
-				// going upwards in frequency -- make it harder on the low and high freqs, middle ground - let it move
-				if (val<0 && priv->bin.cycles_keeping_level < conservation_map_up[ last_level ]) {
-				} else
-				// going downwards in frequency let it happen hard in the middle freqs
-				if (val>0 && priv->bin.cycles_keeping_level < conservation_map_down[ last_level ])  {
-				} else
-				{
-					// reset keep cylcles timer
-					priv->bin.cycles_keeping_level = 0;
-					// set new last level
-					priv->bin.last_level = level;
-					level += val;
-					level = max(level, 0);
-					level = min_t(int, level, devfreq->profile->max_state - 1);
-				}
-			}
-		}
+	/*
+	 * If the decision is to move to a different level, make sure the GPU
+	 * frequency changes.
+	 */
+	if (!adrenoboost && val) {
+		level += val;
+		level = max(level, 0);
+		level = min_t(int, level, devfreq->profile->max_state - 1);
 	} else {
-		if (!adrenoboost && val) {
-			level += val;
-			level = max(level, 0);
-			level = min_t(int, level, devfreq->profile->max_state - 1);
-		} else {
-			if (val) {
-				priv->bin.cycles_keeping_level += 1 + abs(val/2); // higher value change quantity means more addition to cycles_keeping_level for easier switching
-				// going upwards in frequency -- make it harder on the low and high freqs, middle ground - let it move
-				if (val<0 && priv->bin.cycles_keeping_level < conservation_map_up[ last_level ]) {
-				} else
-				// going downwards in frequency let it happen hard in the middle freqs
-				if (val>0 && priv->bin.cycles_keeping_level < conservation_map_down[ last_level ])  {
-				} else
-				{
-					// reset keep cylcles timer
-					priv->bin.cycles_keeping_level = 0;
-					// set new last level
-					priv->bin.last_level = level;
-					level += val;
-					level = max(level, 0);
-					level = min_t(int, level, devfreq->profile->max_state - 1);
-				}
+		if (val) {
+			priv->bin.cycles_keeping_level += 1 + abs(val/2); // higher value change quantity means more addition to cycles_keeping_level for easier switching
+			// going upwards in frequency -- make it harder on the low and high freqs, middle ground - let it move
+			if (val<0 && priv->bin.cycles_keeping_level < conservation_map_up[ last_level ]) {
+			} else
+			// going downwards in frequency let it happen hard in the middle freqs
+			if (val>0 && priv->bin.cycles_keeping_level < conservation_map_down[ last_level ])  {
+			} else
+			{
+				// reset keep cylcles timer
+				priv->bin.cycles_keeping_level = 0;
+				// set new last level
+				priv->bin.last_level = level;
+				level += val;
+				level = max(level, 0);
+				level = min_t(int, level, devfreq->profile->max_state - 1);
 			}
 		}
 	}
-}
+
 	*freq = devfreq->profile->freq_table[level];
 	return 0;
 }
