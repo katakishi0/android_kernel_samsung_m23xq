@@ -42,7 +42,7 @@ jobs:
         with:
           submodules: true
           repository: Aflaungos/android_kernel_samsung_m23xq
-          ref: thirteen
+          ref: fourteen
           path: kernel-source
           
       - name: Checkout Anykernel
