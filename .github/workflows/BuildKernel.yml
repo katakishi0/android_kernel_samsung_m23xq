@@ -1,0 +1,113 @@
+name: Build A14 Kernel
+on:
+  push:
+    branches: ["fourteen"]
+  workflow_dispatch:
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        device: [m23xq]
+        
+    name: Build Kernel
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Installing Dependencies
+        run: |
+          sudo apt update -y
+          sudo apt-get install -y lld binutils clang llvm zip flex bison libncurses-dev gawk  libiberty-dev autoconf kmod bc build-essential gcc libc6 curl libstdc++6 git wget libssl-dev cpio p7zip-full ccache
+          sudo apt clean
+          
+      - name: Checkout
+        uses: actions/checkout@v3
+        
+      - name: Cache Build Tools
+        id: cache-aosp-clang
+        uses: actions/cache@v3
+        with:
+          path: aosp-clang
+          key: aosp-clang  
+        
+      - name: Download Build Tools
+        if: steps.cache-aosp-clang.outputs.cache-hit != 'true'
+        run: |
+          git clone https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86 --depth=1 -b android-13.0.0_r0.130 linux-x86
+          git clone https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9 -b android-13.0.0_r0.130 --depth=1 aarch64-linux-android-4.9
+          git clone https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/arm/arm-linux-androideabi-4.9 -b android-13.0.0_r0.130 --depth=1 arm-linux-androideabi-4.9
+      
+      - name: Setup kernel source
+        uses: actions/checkout@v3
+        with:
+          submodules: true
+          repository: Aflaungos/android_kernel_samsung_m23xq
+          ref: thirteen
+          path: kernel-source
+          
+      - name: Checkout Anykernel
+        uses: actions/checkout@v3
+        with:
+          submodules: true
+          repository: Aflaungos/AnyKernel3
+          ref: master
+          path: anykernel     
+          
+      - name: Build Kernel
+        working-directory: kernel-source
+        run: |
+          export CLANG_PATH=$GITHUB_WORKSPACE/linux-x86/clang-r450784d/bin
+          export PATH=${CLANG_PATH}:${PATH}
+          export ARCH=arm64
+          export CLANG_TRIPLE=aarch64-linux-gnu-
+          export CROSS_COMPILE=$GITHUB_WORKSPACE/aarch64-linux-android-4.9/bin/aarch64-linux-android-
+          export KERNEL_LLVM_BIN=$GITHUB_WORKSPACE/linux-x86/clang-r450784d/bin/clang
+          export LD_LIBRARY_PATH=$GITHUB_WORKSPACE/linux-x86/clang-r450784d/lib64:$LD_LIBRARY_PATH
+          output_dir=out
+          export KERNEL_MAKE_ENV="DTC_EXT=$(pwd)/tools/dtc CONFIG_BUILD_ARM64_DT_OVERLAY=y"
+          make -j8 -C $(pwd) O=$(pwd)/out AR=llvm-ar NM=llvm-nm OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump STRIP=llvm-strip $KERNEL_MAKE_ENV ARCH=arm64 CC=clang vendor/m23xq_eur_open_defconfig --no-print-directory
+          make -j8 -C $(pwd) O=$(pwd)/out AR=llvm-ar NM=llvm-nm OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump STRIP=llvm-strip $KERNEL_MAKE_ENV ARCH=arm64 CC=clang --no-print-directory
+      - name: Upload Kernel
+        uses: actions/upload-artifact@v3
+        with:
+          name: Kernel-${{ matrix.device }}
+          path: kernel-source/out/arch/arm64/boot/*
+          
+      - name: Prepare Anykernel
+        working-directory: anykernel
+        run: |
+          cp -f $GITHUB_WORKSPACE/kernel-source/out/arch/arm64/boot/Image .
+          cp -f $GITHUB_WORKSPACE/kernel-source/out/arch/arm64/boot/dts/vendor/qcom/lagoon.dtb .
+          ZIP_NAME="BoostKernel-${{ matrix.device }}-${{ env.date }}"
+          echo "ZIP_NAME=$ZIP_NAME" >> $GITHUB_ENV
+          zip -r "$ZIP_NAME.zip" *
+          mv "$ZIP_NAME.zip" $GITHUB_WORKSPACE
+          
+      - name: Upload Anykernel
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ env.ZIP_NAME }}
+          path: anykernel/*
+          
+      - name: Creating Config Info
+        run: |
+          echo "Device: Samsung Galaxy M23/F23 5G (m23xq)"
+          Build Date: $(date +%d%m%Y)
+          " >> INFO.txt
+      
+      - name: Release
+        if: success()
+        uses: softprops/action-gh-release@v1
+        with:
+          name: "Kernel Android 13 For Samsung Galaxy M23/F23 5G (m23xq)"
+          body_path: "INFO.txt"
+          files: |
+            kernel-source/out/arch/arm64/boot/*
+            ${{ env.ZIP_NAME }}.zip
+          tag_name: ${{ github.run_number }}-${{ github.ref }}-${{ matrix.device }}
+          
+      - name: Delete workflow runs
+        uses: Mattraks/delete-workflow-runs@v2
+        with:
+          retain_days: 0
+          keep_minimum_runs: 2
