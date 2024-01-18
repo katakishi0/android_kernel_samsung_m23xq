@@ -83,7 +83,7 @@ u64 suspend_time_ms(void)
 	return time_diff;
 }
 
-tatic ssize_t adrenoboost_show(struct device *dev,
+static ssize_t adrenoboost_show(struct device *dev,
 		struct device_attribute *attr, char *buf)
 {
 	size_t count = 0;
