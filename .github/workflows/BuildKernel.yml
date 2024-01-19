@@ -50,7 +50,7 @@ jobs:
         with:
           submodules: true
           repository: Aflaungos/AnyKernel3
-          ref: master
+          ref: m23xq
           path: anykernel     
           
       - name: Build Kernel
