@@ -438,6 +438,7 @@ static void free_desc(unsigned int irq)
 {
 	struct irq_desc *desc = irq_to_desc(irq);
 
+	sbalance_desc_del(desc);
 	irq_remove_debugfs_entry(desc);
 	unregister_irq_proc(irq, desc);
 
