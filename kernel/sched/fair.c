@@ -8008,7 +8008,7 @@ static int find_energy_efficient_cpu(struct task_struct *p, int prev_cpu,
 		goto unlock;
 	}
 
-	if (cpumask_test_cpu(prev_cpu, p->cpus_ptr))))
+	if (cpumask_test_cpu(prev_cpu, p->cpus_ptr))
 		prev_energy = best_energy = compute_energy(p, prev_cpu, pd);
 	else
 		prev_energy = best_energy = ULONG_MAX;
