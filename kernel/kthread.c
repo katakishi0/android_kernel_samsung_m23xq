@@ -683,64 +683,6 @@ repeat:
 }
 EXPORT_SYMBOL_GPL(kthread_worker_fn);
 
-/**
- * queue_kthread_work - queue a kthread_work
- * @worker: target kthread_worker
- * @work: kthread_work to queue
- *
- * Queue @work to work processor @task for async execution.  @task
- * must have been created with kthread_worker_create().  Returns %true
- * if @work was successfully queued, %false if it was already pending.
- */
-bool queue_kthread_work(struct kthread_worker *worker,
-			struct kthread_work *work)
-{
-	bool ret = false;
-	unsigned long flags;
-
-	spin_lock_irqsave(&worker->lock, flags);
-	if (list_empty(&work->node)) {
-		list_add_tail(&work->node, &worker->work_list);
-		work->queue_seq++;
-		if (likely(worker->task))
-			wake_up_process(worker->task);
-		ret = true;
-	}
-	spin_unlock_irqrestore(&worker->lock, flags);
-	return ret;
-}
-EXPORT_SYMBOL_GPL(queue_kthread_work);
-
-/**
- * flush_kthread_work - flush a kthread_work
- * @work: work to flush
- *
- * If @work is queued or executing, wait for it to finish execution.
- */
-void flush_kthread_work(struct kthread_work *work)
-{
-	int seq = work->queue_seq;
-
-	atomic_inc(&work->flushing);
-
-	/*
-	 * mb flush-b0 paired with worker-b1, to make sure either
-	 * worker sees the above increment or we see done_seq update.
-	 */
-	smp_mb__after_atomic_inc();
-
-	/* A - B <= 0 tests whether B is in front of A regardless of overflow */
-	wait_event(work->done, seq - work->done_seq <= 0);
-	atomic_dec(&work->flushing);
-
-	/*
-	 * rmb flush-b1 paired with worker-b0, to make sure our caller
-	 * sees every change made by work->func().
-	 */
-	smp_mb__after_atomic_dec();
-}
-EXPORT_SYMBOL_GPL(flush_kthread_work);
-
 static __printf(3, 0) struct kthread_worker *
 __kthread_create_worker(int cpu, unsigned int flags,
 			const char namefmt[], va_list args)
