@@ -1,8 +1,7 @@
 name: Build A14 Kernel
 on:
-  push:
-    branches: ["fourteen"]
   workflow_dispatch:
+  workflow_call:
 
 jobs:
   build:
