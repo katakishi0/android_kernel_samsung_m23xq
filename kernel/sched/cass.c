@@ -33,7 +33,7 @@ struct cass_cpu_cand {
 };
 
 unsigned int sched_util_threshold[NR_CPUS] = {
-	775, 775, 775, 775, 500, 500, 500, 404
+	500, 404, 404, 404, 404, 404, 775, 775
 };
 
 static __always_inline
