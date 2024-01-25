@@ -3480,9 +3480,7 @@ static int icnss_debugfs_create(struct icnss_priv *priv)
 
 	if (IS_ERR(root_dentry)) {
 		ret = PTR_ERR(root_dentry);
-		#ifdef CONFIG_DEBUG_FS
 		icnss_pr_err("Unable to create debugfs %d\n", ret);
-		#endif
 		goto out;
 	}
 
@@ -3511,9 +3509,7 @@ static int icnss_debugfs_create(struct icnss_priv *priv)
 
 	if (IS_ERR(root_dentry)) {
 		ret = PTR_ERR(root_dentry);
-		#ifdef CONFIG_DEBUG_FS
 		icnss_pr_err("Unable to create debugfs %d\n", ret);
-		#endif
 		return ret;
 	}
 

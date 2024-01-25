@@ -1728,7 +1728,7 @@ static void put_prev_task_rt(struct rq *rq, struct task_struct *p)
 static int pick_rt_task(struct rq *rq, struct task_struct *p, int cpu)
 {
 	if (!task_running(rq, p) &&
-	     cpumask_test_cpu(cpu, p->cpus_ptr))
+	    cpumask_test_cpu(cpu, &p->cpus_allowed))
 		return 1;
 
 	return 0;
@@ -2003,14 +2003,14 @@ static struct rq *find_lock_lowest_rq(struct task_struct *task, struct rq *rq)
 			 * migrated already or had its affinity changed.
 			 * Also make sure that it wasn't scheduled on its rq.
 			 */
-			cpu_allow_check = cpumask_test_cpu(lowest_rq->cpu, task->cpus_ptr);
+			cpu_allow_check = cpumask_test_cpu(lowest_rq->cpu, &task->cpus_allowed);
 #ifdef CONFIG_SEC_PERF_MANAGER
 			if(task->drawing_mig_boost)
 				cpu_allow_check = cpu_active(cpu);
 #endif
 			if (unlikely(task_rq(task) != rq ||
 				     !cpu_allow_check ||
-				     !cpumask_test_cpu(lowest_rq->cpu, task->cpus_ptr) ||
+				     !cpumask_test_cpu(lowest_rq->cpu, &task->cpus_allowed) ||
 				     task_running(rq, task) ||
 				     !rt_task(task) ||
 				     !task_on_rq_queued(task))) {

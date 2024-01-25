@@ -843,9 +843,6 @@ config QTEE_SHM_BRIDGE
 	  memory sub-allocation and free from the default kernel bridge
 	  created by bridge driver.
 
-config STATE_NOTIFIER
-    bool "State Notifier"
-
 source "drivers/soc/qcom/memshare/Kconfig"
 config MSM_PERFORMANCE
 	tristate "msm performance driver to support userspace fmin/fmax request"
