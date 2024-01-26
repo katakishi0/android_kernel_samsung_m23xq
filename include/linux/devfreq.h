@@ -167,6 +167,8 @@ struct devfreq {
 	unsigned long scaling_min_freq;
 	unsigned long scaling_max_freq;
 	bool stop_polling;
+	bool is_boost_device;
+	bool max_boost;
 
 	/* information for device frequency transition */
 	unsigned int total_trans;
