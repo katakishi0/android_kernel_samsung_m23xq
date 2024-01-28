@@ -2,18 +2,8 @@
 /*
  * LRNG Slow Noise Source: Time stamp array handling
  *
- * Copyright (C) 2022, Stephan Mueller <smueller@chronox.de>
+ * Copyright (C) 2016 - 2021, Stephan Mueller <smueller@chronox.de>
  */
-
-#ifndef _LRNG_ES_TIMER_COMMON_H
-#define _LRNG_ES_TIMER_COMMON_H
-
-bool lrng_gcd_tested(void);
-void lrng_gcd_set(u32 running_gcd);
-u32 lrng_gcd_get(void);
-u32 lrng_gcd_analyze(u32 *history, size_t nelem);
-void lrng_gcd_add_value(u32 time);
-bool lrng_highres_timer(void);
 
 /*
  * To limit the impact on the interrupt handling, the LRNG concatenates
@@ -69,7 +59,7 @@ static inline unsigned int lrng_data_slot_val(unsigned int val,
  * Return the pointers for the previous and current units to inject a u32 into.
  * Also return the mask which the u32 word is to be processed.
  */
-static inline void lrng_data_split_u32(u32 *ptr, u32 *pre_ptr, u32 *mask)
+static inline void lrng_pcpu_split_u32(u32 *ptr, u32 *pre_ptr, u32 *mask)
 {
 	/* ptr to previous unit */
 	*pre_ptr = (*ptr - LRNG_DATA_SLOTS_PER_UINT) & LRNG_DATA_WORD_MASK;
@@ -79,5 +69,3 @@ static inline void lrng_data_split_u32(u32 *ptr, u32 *pre_ptr, u32 *mask)
 	*mask = ((1 << (*pre_ptr & (LRNG_DATA_SLOTS_PER_UINT - 1)) *
 			LRNG_DATA_SLOTSIZE_BITS)) - 1;
 }
-
-#endif /* _LRNG_ES_TIMER_COMMON_H */
