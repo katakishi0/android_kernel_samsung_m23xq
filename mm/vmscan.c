@@ -2463,30 +2463,15 @@ static inline bool is_too_low_file(void)
 }
 
 #define MEM_BOOST_THRESHOLD ((600 * 1024 * 1024) / (PAGE_SIZE))
-inline bool need_memory_boosting(struct pglist_data *pgdat)
+inline bool need_memory_boosting(void)
 {
-	bool ret;
-	unsigned long pgdatfile = node_page_state(pgdat, NR_ACTIVE_FILE) +
-				node_page_state(pgdat, NR_INACTIVE_FILE);
-
-	if (time_after(jiffies, last_mode_change + MEM_BOOST_MAX_TIME) ||
-			pgdatfile < MEM_BOOST_THRESHOLD)
+	if (time_after(jiffies, last_mode_change + MEM_BOOST_MAX_TIME))
 		mem_boost_mode = NO_BOOST;
 
-	switch (mem_boost_mode) {
-	case BOOST_KILL:
-	case BOOST_HIGH:
-		ret = true;
-		break;
-	case BOOST_MID:
-		ret = mem_boost_pgdat_wmark(pgdat) ? false : true;
-		break;
-	case NO_BOOST:
-	default:
-		ret = false;
-		break;
-	}
-	return ret;
+	if (mem_boost_mode >= BOOST_HIGH)
+		return true;
+	else
+		return false;
 }
 
 static ssize_t mem_boost_mode_show(struct kobject *kobj,
@@ -2691,7 +2676,8 @@ static void get_scan_count(struct lruvec *lruvec, struct mem_cgroup *memcg,
 		}
 	}
 
-	if (current_is_kswapd() && need_memory_boosting(pgdat)) {
+	if (current_is_kswapd() && need_memory_boosting() &&
+	    !is_too_low_file()) {
 		scan_balance = SCAN_FILE;
 		goto out;
 	}
@@ -5555,7 +5541,7 @@ static void shrink_node_memcg(struct pglist_data *pgdat, struct mem_cgroup *memc
 	blk_finish_plug(&plug);
 	sc->nr_reclaimed += nr_reclaimed;
 
-	if (need_memory_boosting(NULL))
+	if (need_memory_boosting())
 		return;
 
 	/*
