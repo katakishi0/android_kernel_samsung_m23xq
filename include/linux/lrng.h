@@ -10,8 +10,6 @@
 #include <linux/errno.h>
 #include <linux/types.h>
 
-#define kfree_sensitive kzfree
-
 /**
  * struct lrng_crypto_cb - cryptographic callback functions
  * @lrng_drng_name		Name of DRNG
