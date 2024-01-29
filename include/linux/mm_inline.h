@@ -83,7 +83,7 @@ static __always_inline enum lru_list page_lru(struct page *page)
 	lru = page_is_file_cache(page) ? LRU_INACTIVE_FILE : LRU_INACTIVE_ANON;
 	if (PageActive(page))
 		lru += LRU_ACTIVE;
-
+	}
 	return lru;
 }
 

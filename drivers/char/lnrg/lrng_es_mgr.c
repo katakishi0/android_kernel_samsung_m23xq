@@ -13,6 +13,7 @@
 #include <linux/random.h>
 #include <linux/utsname.h>
 #include <linux/workqueue.h>
+#include <asm/archrandom.h>
 
 #include "lrng_internal.h"
 #include "lrng_es_irq.h"

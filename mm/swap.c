@@ -497,7 +497,7 @@ void lru_cache_add(struct page *page)
  * per cpu pagevec.
  */
 void __lru_cache_add_active_or_unevictable(struct page *page,
-					   struct vm_area_struct *vma)
+					   unsigned long vma_flags)
 {
 	VM_BUG_ON_PAGE(PageLRU(page), page);
 

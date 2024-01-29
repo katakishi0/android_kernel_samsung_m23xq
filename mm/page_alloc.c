@@ -4299,7 +4299,7 @@ retry:
 	 */
 	if (!page && !drained) {
 		unreserve_highatomic_pageblock(ac, false);
-		if (!need_memory_boosting(NULL))
+		if (!need_memory_boosting())
 			drain_all_pages(NULL);
 		drained = true;
 		goto retry;
