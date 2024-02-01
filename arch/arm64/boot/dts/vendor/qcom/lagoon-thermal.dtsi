@@ -1238,25 +1238,25 @@
 
 		trips {
 			modem_skin_trip0: modem-skin-trip0 {
-				temperature = <70000>;
+				temperature = <50000>;
 				hysteresis = <4000>;
 				type = "passive";
 			};
 
 			modem_skin_trip1: modem-skin-trip1 {
-				temperature = <70000>;
+				temperature = <50000>;
 				hysteresis = <4000>;
 				type = "passive";
 			};
 
 			skin_batt_trip0: batt-skin-trip0 {
-				temperature = <70000>;
+				temperature = <50000>;
 				hysteresis = <2000>;
 				type = "passive";
 			};
 
 			modem_skin_trip2: modem-skin-trip2 {
-				temperature = <70000>;
+				temperature = <50000>;
 				hysteresis = <4000>;
 				type = "passive";
 			};
@@ -1268,13 +1268,13 @@
 			};
 
 			skin_batt_modem_trip: batt-modem-skin-trip {
-				temperature = <70000>;
+				temperature = <50000>;
 				hysteresis = <4000>;
 				type = "passive";
 			};
 
 			skin_batt_trip2: batt-skin-trip2 {
-				temperature = <70000>;
+				temperature = <50000>;
 				hysteresis = <2000>;
 				type = "passive";
 			};
@@ -1286,7 +1286,7 @@
 			};
 
 			skin_batt_trip3: batt-skin-trip3 {
-				temperature = <70000>;
+				temperature = <50000>;
 				hysteresis = <2000>;
 				type = "passive";
 			};
@@ -1298,13 +1298,13 @@
 			};
 
 			skin_batt_trip4: batt-skin-trip4 {
-				temperature = <70000>;
+				temperature = <50000>;
 				hysteresis = <1000>;
 				type = "passive";
 			};
 
 			cx_emer_trip: cx-emer-trip {
-				temperature = <70000>;
+				temperature = <50000>;
 				hysteresis = <4000>;
 				type = "passive";
 			};
