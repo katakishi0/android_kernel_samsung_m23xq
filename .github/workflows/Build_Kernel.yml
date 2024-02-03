@@ -5,6 +5,8 @@ on:
   push:
 
 jobs:
+  update:
+      runs-on: ubuntu-latest
   build:
     strategy:
       matrix:
