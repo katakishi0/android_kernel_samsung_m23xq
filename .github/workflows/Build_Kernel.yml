@@ -5,6 +5,10 @@ on:
   push:
 
 jobs:
+  update:
+    runs-on: ubuntu-latest
+
+jobs:
   build:
     strategy:
       matrix:
