@@ -1,8 +1,8 @@
 name: Build Kernel
 on:
-  push:
-    branches: ["fourteen"]
+  workflow_call:
   workflow_dispatch:
+  push:
 
 jobs:
   build:
