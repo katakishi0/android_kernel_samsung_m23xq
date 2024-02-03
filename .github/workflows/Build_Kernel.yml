@@ -5,12 +5,13 @@ on:
   push:
 
 jobs:
-  update:
-      runs-on: ubuntu-latest
   build:
     strategy:
       matrix:
         device: [m23xq]
+
+    name: Build Kernel
+    runs-on: ubuntu-latest
     
     steps:
       - name: Installing Dependencies
