@@ -35,10 +35,10 @@ jobs:
         run: |
           curl https://github.com/llvm/llvm-project/releases/download/llvmorg-10.0.0/clang+llvm-10.0.0-x86_64-linux-gnu-ubuntu-18.04.tar.xz
           mkdir linux-x86
-          mv clang+llvm-10.0.0-x86_64-linux-gnu-ubuntu-18.04.tar.xz linux-x86/clang+llvm-10.0.0-x86_64-linux-gnu-ubuntu-18.04.tar.xz
-          cd linux-x86
-          tar -xf clang+llvm-10.0.0-x86_64-linux-gnu-ubuntu-18.04.tar.xz
-          rm clang+llvm-10.0.0-x86_64-linux-gnu-ubuntu-18.04.tar.xz
+          mv $GITHUB_WORKSPACE/clang+llvm-10.0.0-x86_64-linux-gnu-ubuntu-18.04.tar.xz $GITHUB_WORKSPACE/linux-x86/clang+llvm-10.0.0-x86_64-linux-gnu-ubuntu-18.04.tar.xz
+          cd $GITHUB_WORKSPACE/linux-x86
+          tar -xf $GITHUB_WORKSPACE/linux-x86/clang+llvm-10.0.0-x86_64-linux-gnu-ubuntu-18.04.tar.xz
+          rm $GITHUB_WORKSPACE/linux-x86/clang+llvm-10.0.0-x86_64-linux-gnu-ubuntu-18.04.tar.xz
           cd ..
           git clone https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9 -b android-13.0.0_r0.130 --depth=1 aarch64-linux-android-4.9
       
