@@ -9,9 +9,6 @@ jobs:
     strategy:
       matrix:
         device: [m23xq]
-        
-    name: Build Kernel
-    runs-on: ubuntu-latest
     
     steps:
       - name: Installing Dependencies
@@ -33,10 +30,13 @@ jobs:
       - name: Download Build Tools
         if: steps.cache-aosp-clang.outputs.cache-hit != 'true'
         run: |
-          curl https://github.com/llvm/llvm-project/releases/download/llvmorg-10.0.0/clang+llvm-10.0.0-x86_64-linux-gnu-ubuntu-18.04.tar.xz /linux-x86
+          curl https://github.com/llvm/llvm-project/releases/download/llvmorg-10.0.0/clang+llvm-10.0.0-x86_64-linux-gnu-ubuntu-18.04.tar.xz
+          mkdir linux-x86
+          mv clang+llvm-10.0.0-x86_64-linux-gnu-ubuntu-18.04.tar.xz linux-x86/clang+llvm-10.0.0-x86_64-linux-gnu-ubuntu-18.04.tar.xz
           cd linux-x86
           tar -xf clang+llvm-10.0.0-x86_64-linux-gnu-ubuntu-18.04.tar.xz
           rm clang+llvm-10.0.0-x86_64-linux-gnu-ubuntu-18.04.tar.xz
+          cd ..
           git clone https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9 -b android-13.0.0_r0.130 --depth=1 aarch64-linux-android-4.9
       
       - name: Setup kernel source
