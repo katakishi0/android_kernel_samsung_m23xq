@@ -128,10 +128,12 @@ extern struct selinux_state selinux_state;
 //If the binary is no-ship, selinux_enforcing value can be changed.
 #if (defined CONFIG_KDP_CRED && defined CONFIG_SAMSUNG_PRODUCT_SHIP)
 extern int selinux_enforcing __kdp_ro_aligned;
+#else
+extern int selinux_enforcing;
 #endif
 static inline bool enforcing_enabled(struct selinux_state *state)
 {
-	return state->enforcing; 
+	return selinux_enforcing; // SEC_SELINUX_PORTING_COMMON Change to use RKP 
 }
 
 static inline void enforcing_set(struct selinux_state *state, bool value)
@@ -139,7 +141,7 @@ static inline void enforcing_set(struct selinux_state *state, bool value)
 #if (defined CONFIG_KDP_CRED && defined CONFIG_SAMSUNG_PRODUCT_SHIP)
 	uh_call(UH_APP_KDP, PROTECT_SELINUX_VAR, (u64)&selinux_enforcing, (u64)value, 0, 0);
 #else
-	return state->enforcing;
+	selinux_enforcing = value; // SEC_SELINUX_PORTING_COMMON Change to use RKP
 #endif
 }
 #else
@@ -252,7 +254,13 @@ struct extended_perms {
 };
 
 /* definitions of av_decision.flags */
+// [ SEC_SELINUX_PORTING_COMMON
+#ifdef CONFIG_ALWAYS_ENFORCE
+#define AVD_FLAGS_PERMISSIVE	0x0000
+#else
 #define AVD_FLAGS_PERMISSIVE	0x0001
+#endif
+// ] SEC_SELINUX_PORTING_COMMON
 
 void security_compute_av(struct selinux_state *state,
 			 u32 ssid, u32 tsid,
