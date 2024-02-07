@@ -139,7 +139,7 @@ static inline void enforcing_set(struct selinux_state *state, bool value)
 #if (defined CONFIG_KDP_CRED && defined CONFIG_SAMSUNG_PRODUCT_SHIP)
 	uh_call(UH_APP_KDP, PROTECT_SELINUX_VAR, (u64)&selinux_enforcing, (u64)value, 0, 0);
 #else
-	state->enforcing = value;
+	return state->enforcing;
 #endif
 }
 #else
