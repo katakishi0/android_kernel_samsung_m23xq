@@ -2966,18 +2966,8 @@ static int selinux_sb_kern_mount(struct super_block *sb, int flags, void *data)
 	const struct cred *cred = current_cred();
 	struct common_audit_data ad;
 
-	rc = superblock_doinit(sb, data);
-	if (rc)
-		goto out;
-
-	/* Allow all mounts performed by the kernel */
-	if (flags & (MS_KERNMOUNT | MS_SUBMOUNT))
-		goto out;
-
 	ad.type = LSM_AUDIT_DATA_DENTRY;
 	ad.u.dentry = sb->s_root;
-
-out:
 	return superblock_has_perm(cred, sb, FILESYSTEM__MOUNT, &ad);
 }
 
