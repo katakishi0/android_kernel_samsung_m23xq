@@ -300,7 +300,6 @@ static ssize_t kernfs_fop_write(struct file *file, const char __user *user_buf,
 					return -ENOMEM;
 			}
 		}
-	}
 
 	if (copy_from_user(buf, user_buf, len)) {
 		len = -EFAULT;
