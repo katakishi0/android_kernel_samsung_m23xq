@@ -62,12 +62,17 @@ jobs:
       - name: Set build parameters
         working-directory: kernel-source
         run: |
+          CLANG="$GITHUB_WORKSPACE/Clang-10.0.0/bin"
+          GCC64="$GITHUB_WORKSPACE/Clang-10.0.0/aarch64-linux-android-4.9/bin"
+          PATH=$CLANG:$GCC64:$PATH
+          export PATH
           export ARCH=arm64
           export PROJECT_NAME=m23xq
-          export KERNEL_LLVM_BIN="$GITHUB_WORKSPACE/Clang-10.0.0/clang/bin/clang"
-          export KERNEL_MAKE_ENV="DTC_EXT=$(pwd)/tools/dtc CONFIG_BUILD_ARM64_DT_OVERLAY=y"
+          export KERNEL_LLVM_BIN=clang
+          export DTC_EXT="$GITHUB_WORKSPACE/kernel-source/tools/dtc"
+          export KERNEL_MAKE_ENV=$DTC_EXT
           export CLANG_TRIPLE=aarch64-linux-gnu-
-          export BUILD_CROSS_COMPILE="$GITHUB_WORKSPACE/Clang-10.0.0/aarch64-linux-android-4.9/bin/aarch64-linux-android-"
+          export BUILD_CROSS_COMPILE=aarch64-linux-android-
           output_dir=out
 
       - name: Debug paths
