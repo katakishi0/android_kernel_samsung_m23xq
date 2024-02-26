@@ -73,14 +73,18 @@ jobs:
           PATH=$CLANG:$GCC64:$GCC32:$PATH
           export PATH
           export ARCH=arm64
-          export CLANG_TRIPLE=aarch64-linux-gnu
+          export PROJECT_NAME=m23xq
+          export KERNEL_LLVM_BIN=$GITHUB_WORKSPACE/Clang-10.0.0/clang/bin/clang
+          export KERNEL_MAKE_ENV="DTC_EXT=$(pwd)/tools/dtc CONFIG_BUILD_ARM64_DT_OVERLAY=y"
+          export CLANG_TRIPLE=aarch64-linux-gnu-
           export CROSS_COMPILE=aarch64-linux-android-
           output_dir=out
           date=$(date +"%Y%m%d%H%M")
           export PATH="/usr/lib/ccache:$PATH"
           echo "date=$date" >> $GITHUB_ENV
-          echo "Building kernel with $args"  
-          make O=out LLVM=1 LLVM_IAS=1 CC="ccache clang" vendor/${{ matrix.device }}_eur_open_defconfig && make O=out LLVM=1 LLVM_IAS=1 CC="ccache clang" -j$(grep -c ^processor /proc/cpuinfo)
+          echo "Building kernel with $args"
+          make -j$(grep -c ^processor /proc/cpuinfo) -C $(pwd) O=$(pwd)/out $KERNEL_MAKE_ENV ARCH=arm64 CROSS_COMPILE=$BUILD_CROSS_COMPILE REAL_CC=$KERNEL_LLVM_BIN CLANG_TRIPLE=$CLANG_TRIPLE CONFIG_SECTION_MISMATCH_WARN_ONLY=y vendor/m23xq_eur_open_defconfig --no-print-directory
+          make -j$(grep -c ^processor /proc/cpuinfo) -C $(pwd) O=$(pwd)/out $KERNEL_MAKE_ENV ARCH=arm64 CROSS_COMPILE=$BUILD_CROSS_COMPILE REAL_CC=$KERNEL_LLVM_BIN CLANG_TRIPLE=$CLANG_TRIPLE CONFIG_SECTION_MISMATCH_WARN_ONLY=y --no-print-directory
           
       - name: Upload BoostKernel-${{ matrix.device }}
         uses: actions/upload-artifact@v3
