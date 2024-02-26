@@ -38,7 +38,6 @@ jobs:
         run: |
           git clone https://github.com/Aflaungos/Clang_10.0.0 -b main Clang-10.0.0/clang
           git clone https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9 -b android-13.0.0_r0.13 --depth=1 --single-branch --no-tags Clang-10.0.0/aarch64-linux-android-4.9
-          git clone https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/arm/arm-linux-androideabi-4.9 -b android-13.0.0_r0.13 --depth=1 --single-branch --no-tags Clang-10.0.0/arm-linux-androideabi-4.9
       
       - name: Setup kernel source
         uses: actions/checkout@v4
@@ -70,14 +69,12 @@ jobs:
         working-directory: kernel-source
         run: |
           CLANG="$GITHUB_WORKSPACE/Clang-10.0.0/clang/bin"
-          GCC32="$GITHUB_WORKSPACE/Clang-10.0.0/arm-linux-androideabi-4.9/bin"
           GCC64="$GITHUB_WORKSPACE/Clang-10.0.0/aarch64-linux-android-4.9/bin"
           PATH=$CLANG:$GCC64:$GCC32:$PATH
           export PATH
           export ARCH=arm64
           export CLANG_TRIPLE=aarch64-linux-gnu
           export CROSS_COMPILE=aarch64-linux-android-
-          export CROSS_COMPILE_ARM32=arm-linux-androideabi-
           output_dir=out
           date=$(date +"%Y%m%d%H%M")
           export PATH="/usr/lib/ccache:$PATH"
