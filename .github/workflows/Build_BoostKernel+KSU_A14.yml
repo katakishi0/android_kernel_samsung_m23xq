@@ -35,11 +35,13 @@ jobs:
           git clone https://github.com/Aflaungos/Clang_10.0.0 -b main Clang-10.0.0/clang
           git clone https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9 -b android-13.0.0_r0.13 Clang-10.0.0/aarch64-linux-android-4.9
       
-      - name: Debug Clang directory
+      - name: Debug KERNEL_LLVM_BIN
         run: |
-         ls -a $GITHUB_WORKSPACE/Clang-10.0.0/clang
-         ls -a $GITHUB_WORKSPACE/Clang-10.0.0/
-         ls -a $GITHUB_WORKSPACE/Clang-10.0.0/clang/bin/
+          echo "KERNEL_LLVM_BIN is $KERNEL_LLVM_BIN"
+          echo "BUILD_CROSS_COMPILE is $BUILD_CROSS_COMPILE"
+          echo "KERNEL_MAKE_ENV is $KERNEL_MAKE_ENV"
+          echo "PROJECT_NAME is $PROJECT_NAME"
+          echo "CLANG_TRIPLE is $CLANG_TRIPLE"
   
       - name: Setup kernel source
         uses: actions/checkout@v4
