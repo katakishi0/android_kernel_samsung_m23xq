@@ -36,7 +36,7 @@ jobs:
       - name: Download Build Tools
         if: steps.cache-aosp-clang.outputs.cache-hit != 'true'
         run: |
-          git clone https://github.com/Aflaungos/Clang_10.0.0 -b master Clang-10.0.0/clang
+          git clone https://github.com/Aflaungos/Clang_10.0.0 -b main Clang-10.0.0/clang
           git clone https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9 -b android-13.0.0_r0.13 --depth=1 --single-branch --no-tags Clang-10.0.0/aarch64-linux-android-4.9
           git clone https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/arm/arm-linux-androideabi-4.9 -b android-13.0.0_r0.13 --depth=1 --single-branch --no-tags Clang-10.0.0/arm-linux-androideabi-4.9
       
