@@ -83,7 +83,7 @@ jobs:
           export PATH="/usr/lib/ccache:$PATH"
           echo "date=$date" >> $GITHUB_ENV
           echo "Building kernel with $args"  
-          make O=out LLVM=1 LLVM_IAS=1 CC="ccache clang" lineageos_${{ matrix.device }}_defconfig && make O=out LLVM=1 LLVM_IAS=1 CC="ccache clang" -j$(grep -c ^processor /proc/cpuinfo)
+          make O=out LLVM=1 LLVM_IAS=1 CC="ccache clang" vendor/${{ matrix.device }}_eur_open_defconfig && make O=out LLVM=1 LLVM_IAS=1 CC="ccache clang" -j$(grep -c ^processor /proc/cpuinfo)
           
       - name: Upload BoostKernel-${{ matrix.device }}
         uses: actions/upload-artifact@v3
