@@ -58,8 +58,8 @@ jobs:
         working-directory: kernel-source
         run: |
           chmod a+x $GITHUB_WORKSPACE/Clang-10.0.0/clang/bin/clang
-          
-      - name: Build Kernel
+
+      - name: Set build parameters
         working-directory: kernel-source
         run: |
           export ARCH=arm64
@@ -69,9 +69,6 @@ jobs:
           export CLANG_TRIPLE=aarch64-linux-gnu-
           export BUILD_CROSS_COMPILE="$GITHUB_WORKSPACE/Clang-10.0.0/aarch64-linux-android-4.9/bin/aarch64-linux-android-"
           output_dir=out
-          make -j$(grep -c ^processor /proc/cpuinfo) -C $(pwd) O=$(pwd)/out $KERNEL_MAKE_ENV ARCH=arm64 CROSS_COMPILE=$BUILD_CROSS_COMPILE REAL_CC=$KERNEL_LLVM_BIN CLANG_TRIPLE=$CLANG_TRIPLE CONFIG_SECTION_MISMATCH_WARN_ONLY=y vendor/m23xq_eur_open_defconfig --no-print-directory
-          make -j$(grep -c ^processor /proc/cpuinfo) -C $(pwd) O=$(pwd)/out $KERNEL_MAKE_ENV ARCH=arm64 CROSS_COMPILE=$BUILD_CROSS_COMPILE REAL_CC=$KERNEL_LLVM_BIN CLANG_TRIPLE=$CLANG_TRIPLE CONFIG_SECTION_MISMATCH_WARN_ONLY=y --no-print-directory
-          $(pwd)/tools/mkdtimg create $(pwd)/out/arch/arm64/boot/dtbo.img --page_size=4096 $(find out/arch/arm64/boot/dts/samsung/m23/m23xq/ -name *.dtbo)
 
       - name: Debug paths
         run: |
@@ -80,6 +77,13 @@ jobs:
           echo "KERNEL_MAKE_ENV is $KERNEL_MAKE_ENV"
           echo "PROJECT_NAME is $PROJECT_NAME"
           echo "CLANG_TRIPLE is $CLANG_TRIPLE"
+          
+      - name: Build Kernel
+        working-directory: kernel-source
+        run: |
+          make -j$(grep -c ^processor /proc/cpuinfo) -C $(pwd) O=$(pwd)/out $KERNEL_MAKE_ENV ARCH=arm64 CROSS_COMPILE=$BUILD_CROSS_COMPILE REAL_CC=$KERNEL_LLVM_BIN CLANG_TRIPLE=$CLANG_TRIPLE CONFIG_SECTION_MISMATCH_WARN_ONLY=y vendor/m23xq_eur_open_defconfig --no-print-directory
+          make -j$(grep -c ^processor /proc/cpuinfo) -C $(pwd) O=$(pwd)/out $KERNEL_MAKE_ENV ARCH=arm64 CROSS_COMPILE=$BUILD_CROSS_COMPILE REAL_CC=$KERNEL_LLVM_BIN CLANG_TRIPLE=$CLANG_TRIPLE CONFIG_SECTION_MISMATCH_WARN_ONLY=y --no-print-directory
+          $(pwd)/tools/mkdtimg create $(pwd)/out/arch/arm64/boot/dtbo.img --page_size=4096 $(find out/arch/arm64/boot/dts/samsung/m23/m23xq/ -name *.dtbo)
           
       - name: Upload BoostKernel-${{ matrix.device }}
         uses: actions/upload-artifact@v3
