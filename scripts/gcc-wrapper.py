@@ -66,7 +66,7 @@ def run_gcc():
             print(args[0] + ':',e.strerror)
             print('Is your PATH set correctly?')
         else:
-            print ' '.join(args), str(e)
+            print(' '.join(args), str(e))
 
     return result
 
