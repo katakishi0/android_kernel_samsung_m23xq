@@ -64,6 +64,11 @@ jobs:
           key: Build-BoostKernel-${{ matrix.device }}
           save: ${{ github.event_name != 'pull_request' }}
           max-size: 2G
+
+      - name: Adjust file permissions
+        working-directory: kernel-source
+        run: |
+          chmod a+x $GITHUB_WORKSPACE/Clang-10.0.0/clang/bin/clang
           
       - name: Build Kernel
         working-directory: kernel-source
