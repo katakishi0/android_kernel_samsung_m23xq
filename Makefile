@@ -1916,8 +1916,6 @@ cmd_files := $(wildcard .*.cmd $(foreach f,$(sort $(targets)),$(dir $(f)).$(notd
 ifneq ($(cmd_files),)
   $(cmd_files): ;	# Do not try to update included dependency files
   include $(cmd_files)
-endif
-
 endif	# skip-makefile
 
 PHONY += FORCE
