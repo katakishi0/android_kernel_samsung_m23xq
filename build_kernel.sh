@@ -7,7 +7,7 @@ export CC=${HOME}/linux-x86/clang-r416183b/bin/clang
 export CLANG_TRIPLE=aarch64-linux-gnu-
 export DTC_EXT=$(pwd)/tools/dtc
 
-make -j$(nproc --all) -C $(pwd) O=$(pwd)/out CC=clang vendor/m23xq_eur_open_defconfig
+make -j$(nproc --all) -C $(pwd) O=$(pwd)/out vendor/m23xq_eur_open_defconfig CC=clang
 make -j$(nproc --all) -C $(pwd) O=$(pwd)/out CC=clang
 
 $(pwd)/tools/mkdtimg create $(pwd)/out/arch/arm64/boot/dtbo.img --page_size=4096 $(find out/arch/arm64/boot/dts/samsung/m23/m23xq/ -name *.dtbo)
