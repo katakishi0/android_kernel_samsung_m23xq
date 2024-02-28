@@ -68,7 +68,7 @@ $(obj)/Image.lzo: $(obj)/Image FORCE
 	$(call if_changed,lzo)
 
 $(obj)/dtbo.img: $(DTBO_OBJS) FORCE
-	$(call if_changed,mkdtimg,4096) # align dtbo.img to 4kB
+	$(call if_changed,mkdtimg)
 
 $(obj)/Image.gz-dtb: $(obj)/Image.gz $(DTB_OBJS) FORCE
 	$(call if_changed,cat)
