@@ -43,7 +43,7 @@ jobs:
       - name: Setup kernel source
         uses: actions/checkout@v4
         with:
-          repository: Aflaungos/Aflaungos/android_kernel_samsung_m23xq
+          repository: Aflaungos/android_kernel_samsung_m23xq
           ref: thirteen
           path: kernel-source
           
