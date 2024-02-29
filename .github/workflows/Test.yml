@@ -32,3 +32,4 @@ jobs:
       with:
         artifacts: ${{ steps.build.outputs.outfile }}
         token: ${{ secrets.GITHUB_TOKEN }}
+        tag_name: ${{ github.run_number }}-${{ github.ref }}-${{ matrix.device }}
