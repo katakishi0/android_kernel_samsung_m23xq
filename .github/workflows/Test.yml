@@ -24,7 +24,7 @@ jobs:
         NAME: ClangKernel
       with:
         arch: arm64
-        compiler: gcc/15
+        compiler: gcc/14
         defconfig: vendor/m23xq_eur_open_defconfig
         image: Image
 
