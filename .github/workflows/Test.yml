@@ -27,9 +27,11 @@ jobs:
         defconfig: vendor/m23xq_eur_open_defconfig
         image: Image
 
-    - name: Release build
-      uses: ncipollo/release-action@v1
+    - name: Release
+      uses: softprops/action-gh-release@v1
       with:
-        artifacts: ${{ steps.build.outputs.outfile }}
-        token: ${{ secrets.GITHUB_TOKEN }}
-        tag_name: ${{ github.run_number }}-${{ github.ref }}-${{ matrix.device }}
+          name: "Kernel For ${{ matrix.device }}"
+          body_path: "INFO.txt"
+          files: |
+            kernel-source/out/arch/arm64/boot/*
+            ${{ env.ZIP_NAME }}.zip
