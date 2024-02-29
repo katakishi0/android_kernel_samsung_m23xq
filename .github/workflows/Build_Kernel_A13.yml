@@ -7,9 +7,9 @@ jobs:
   build:
     strategy:
       matrix:
-        device: [evert]
+        device: [m23xq]
 
-    name: Build BoostKernel For ${{ matrix.device }}
+    name: Build Kernel For ${{ matrix.device }}
     runs-on: ubuntu-latest
     env:
       CCACHE_COMPILERCHECK: "%compiler% -dumpmachine; %compiler% -dumpversion"
@@ -80,10 +80,10 @@ jobs:
           echo "Building kernel with $args"  
           make O=out LLVM=1 LLVM_IAS=1 CC="ccache clang" vendor/m23xq_eur_open_defconfig && make O=out LLVM=1 LLVM_IAS=1 CC="ccache clang" -j$(grep -c ^processor /proc/cpuinfo)
           
-      - name: Upload BoostKernel-${{ matrix.device }}
+      - name: Upload Kernel-${{ matrix.device }}
         uses: actions/upload-artifact@v3
         with:
-          name: BoostKernel-${{ matrix.device }}
+          name: Kernel-${{ matrix.device }}
           path: kernel-source/out/arch/arm64/boot/*
 
       - name: Prepare Anykernel
@@ -111,7 +111,7 @@ jobs:
         if: success()
         uses: softprops/action-gh-release@v1
         with:
-          name: "BoostKernel For ${{ matrix.device }}"
+          name: "Kernel For ${{ matrix.device }}"
           body_path: "INFO.txt"
           files: |
             kernel-source/out/arch/arm64/boot/*
