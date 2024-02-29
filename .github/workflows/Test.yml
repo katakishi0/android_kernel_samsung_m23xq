@@ -24,6 +24,7 @@ jobs:
       with:
         arch: arm64
         compiler: clang/14
+        KERNEL_PATH: kernel-source
         defconfig: vendor/m23xq_eur_open_defconfig
         image: Image
 
@@ -32,6 +33,14 @@ jobs:
       with:
           name: "Kernel For ${{ matrix.device }}"
           files: |
-            /github/workspace/out/arch/arm64/boot/*
+            $GITHUB_WORKSPACE/kernel-source/out/arch/arm64/boot/*
             ${{ env.ZIP_NAME }}.zip
           tag_name: ${{ github.run_number }}-${{ github.ref }}-${{ matrix.device }}
+
+   # - name: Release build
+   #   uses: appleboy/telegram-action@master
+   #   with:
+   #     to: ${{ secrets.CHANNEL_ID }}
+   #     token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+   #     message: Kernel is built!, took ${{ steps.build.outputs.elapsed_time }} seconds.
+   #     document: ${{ steps.build.outputs.outfile }}
