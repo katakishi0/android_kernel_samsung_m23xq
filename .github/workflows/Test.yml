@@ -31,8 +31,7 @@ jobs:
       uses: softprops/action-gh-release@v1
       with:
           name: "Kernel For ${{ matrix.device }}"
-          body_path: "INFO.txt"
           files: |
-            kernel-source/out/arch/arm64/boot/*
+            /github/workspace/out/arch/arm64/boot/*
             ${{ env.ZIP_NAME }}.zip
           tag_name: ${{ github.run_number }}-${{ github.ref }}-${{ matrix.device }}
