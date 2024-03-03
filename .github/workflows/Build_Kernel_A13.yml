@@ -28,7 +28,7 @@ jobs:
 
       - name: Cache Build Tools
         id: cache-aosp-clang
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: aosp-clang
           key: aosp-clang  
@@ -44,7 +44,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: Aflaungos/android_kernel_samsung_m23xq
-          ref: thirteen
+          ref: fourteen-BoostKernel
           path: kernel-source
 
       - name: Checkout Anykernel
