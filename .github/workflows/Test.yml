@@ -33,8 +33,7 @@ jobs:
       with:
           name: "Kernel For Samsung Galaxy M23"
           files: |
-            $GITHUB_WORKSPACE/kernel-source/out/arch/arm64/boot/*
-            ${{ env.ZIP_NAME }}.zip
+            ${{ steps.build.outputs.outfile }}
           tag_name: Galaxy_M23
 
    # - name: Release build
