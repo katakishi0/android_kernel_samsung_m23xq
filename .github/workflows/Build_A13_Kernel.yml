@@ -28,7 +28,7 @@ jobs:
         
       - name: Cache Build Tools
         id: cache-aosp-clang
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: aosp-clang
           key: aosp-clang  
@@ -65,7 +65,7 @@ jobs:
       - name: Build Kernel
         working-directory: kernel-source
         run: |
-          CLANG="$GITHUB_WORKSPACE/aosp-clang/clang/clang-r487747c/bin"
+          CLANG="$GITHUB_WORKSPACE/aosp-clang/clang/bin"
           GCC64="$GITHUB_WORKSPACE/aosp-clang/aarch64-linux-android-4.9/bin"
           PATH=$CLANG:$GCC64:$PATH
           export PATH
