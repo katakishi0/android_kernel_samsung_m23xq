@@ -30,6 +30,7 @@ jobs:
           path: kernel-source
 
       - name: Setup submodules
+        working-directory: kernel-source
         run: git submodule update --init --recursive --depth 0
         
       - name: Cache Build Tools
