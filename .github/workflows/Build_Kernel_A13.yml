@@ -37,6 +37,7 @@ jobs:
         if: steps.cache-aosp-clang.outputs.cache-hit != 'true'
         run: |
           git clone https://github.com/crdroidandroid/android_prebuilts_clang_host_linux-x86_clang-6032204 --depth=1 --single-branch --no-tags aosp-clang/clang
+          git clone https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9 -b android-14.0.0_r0.47 --depth=1 --single-branch --no-tags aosp-clang/aarch64-linux-android-4.9
       
       - name: Setup kernel source
         uses: actions/checkout@v4
@@ -65,17 +66,18 @@ jobs:
         working-directory: kernel-source
         run: |
           CLANG="$GITHUB_WORKSPACE/aosp-clang/clang/clang-r487747c/bin"
-          PATH=$CLANG:$PATH
+          GCC64="$GITHUB_WORKSPACE/aosp-clang/aarch64-linux-android-4.9/bin"
+          PATH=$CLANG:$GCC64:$PATH
           export PATH
           export ARCH=arm64
           export CLANG_TRIPLE=aarch64-linux-gnu
-          export CROSS_COMPILE=llvm-
+          export CROSS_COMPILE=aarch64-linux-android-
           output_dir=out
           date=$(date +"%Y%m%d%H%M")
           export PATH="/usr/lib/ccache:$PATH"
           echo "date=$date" >> $GITHUB_ENV
           echo "Building kernel with $args"  
-          make -C $(pwd) O=out LLVM=1 CC="ccache clang" vendor/m23xq_eur_open_defconfig && make O=out LLVM=1 CC="ccache clang" -j$(grep -c ^processor /proc/cpuinfo)
+          make -C $(pwd) O=out CC="ccache clang" vendor/m23xq_eur_open_defconfig && make O=out CC="ccache clang" -j$(grep -c ^processor /proc/cpuinfo)
           
       - name: Upload BoostKernel-${{ matrix.device }}
         uses: actions/upload-artifact@v3
