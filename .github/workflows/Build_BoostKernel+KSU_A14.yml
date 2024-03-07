@@ -42,7 +42,6 @@ jobs:
           fetch-depth: 1
           repository: Aflaungos/android_kernel_samsung_m23xq
           ref: fourteen-BoostKernel
-          path: kernel-source
 
       - name: Setup submodules
         run: git submodule update --init --recursive --depth 0
@@ -57,7 +56,6 @@ jobs:
           path: anykernel
           
       - name: Build Kernel
-        working-directory: kernel-source
         run: |
           CLANG="$GITHUB_WORKSPACE/aosp-clang/clang/bin"
           GCC64="$GITHUB_WORKSPACE/aosp-clang/aarch64-linux-android-4.9/bin"
@@ -77,12 +75,12 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: BoostKernel-${{ matrix.device }}
-          path: kernel-source/out/arch/arm64/boot/*
+          path: out/arch/arm64/boot/*
           
       - name: Prepare Anykernel
         working-directory: anykernel
         run: |
-          cp -f $GITHUB_WORKSPACE/kernel-source/out/arch/arm64/boot/Image .
+          cp -f $GITHUB_WORKSPACE/out/arch/arm64/boot/Image .
           ZIP_NAME="Kernel-${{ matrix.device }}"
           echo "ZIP_NAME=$ZIP_NAME" >> $GITHUB_ENV
           zip -r "$ZIP_NAME.zip" *
@@ -107,7 +105,7 @@ jobs:
           name: "BoostKernel For ${{ matrix.device }}"
           body_path: "INFO.txt"
           files: |
-            kernel-source/out/arch/arm64/boot/*
+            out/arch/arm64/boot/*
             ${{ env.ZIP_NAME }}.zip
           tag_name: ${{ github.run_number }}-${{ github.ref }}-${{ matrix.device }}
           
