@@ -1,4 +1,4 @@
-name: Build kernel A13
+name: Build BoostKernel A14 with KernelSU
 on:
   workflow_dispatch:
   schedule:
