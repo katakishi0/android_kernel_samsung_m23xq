@@ -36,7 +36,7 @@ jobs:
       - name: Download Build Tools
         if: steps.cache-aosp-clang.outputs.cache-hit != 'true'
         run: |
-          git clone https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86 --depth=1 --single-branch --no-tags -b main aosp-clang/clang
+          git clone https://github.com/crdroidandroid/android_prebuilts_clang_host_linux-x86_clang-6032204 --depth=1 --single-branch --no-tags aosp-clang/clang
       
       - name: Setup kernel source
         uses: actions/checkout@v4
