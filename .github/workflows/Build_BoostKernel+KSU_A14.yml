@@ -1,22 +1,26 @@
-name: Build BoostKernel A14 with KernelSU
+name: Build kernel A13
 on:
   workflow_dispatch:
   schedule:
-    - cron: "0 12 * * *"
+    - cron: "10 12 * * *"
 jobs:
   build:
     strategy:
       matrix:
         device: [m23xq]
         
-    name: Build BoostKernel For ${{ matrix.device }}
+    name: Build Kernel For ${{ matrix.device }}
     runs-on: ubuntu-latest
+    env:
+      CCACHE_COMPILERCHECK: "%compiler% -dumpmachine; %compiler% -dumpversion"
+      CCACHE_NOHASHDIR: "true"
+      CCACHE_HARDLINK: "true"
     
     steps:
       - name: Installing Dependencies
         run: |
           sudo apt update -y
-          sudo apt-get install -y lld binutils clang llvm zip flex bison libncurses-dev gawk  libiberty-dev autoconf kmod bc build-essential gcc libc6 curl libstdc++6 git wget libssl-dev cpio p7zip-full
+          sudo apt-get install -y lld binutils clang llvm zip flex bison libncurses-dev gawk  libiberty-dev autoconf kmod bc build-essential gcc libc6 curl libstdc++6 git wget libssl-dev cpio p7zip-full ccache
           sudo apt clean
           
       - name: Checkout
@@ -26,69 +30,54 @@ jobs:
         id: cache-aosp-clang
         uses: actions/cache@v4
         with:
-          path: Clang-10.0.0
-          key: Clang-10.0.0  
+          path: aosp-clang
+          key: aosp-clang  
         
       - name: Download Build Tools
         if: steps.cache-aosp-clang.outputs.cache-hit != 'true'
         run: |
-          git clone https://github.com/Aflaungos/Clang_10.0.0 -b main Clang-10.0.0/clang
-          git clone https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9 -b android-13.0.0_r0.13 Clang-10.0.0/aarch64-linux-android-4.9
-  
+          git clone https://github.com/crdroidandroid/android_prebuilts_clang_host_linux-x86_clang-6032204 --depth=1 --single-branch --no-tags aosp-clang/clang
+          git clone https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9 -b android-14.0.0_r0.47 --depth=1 --single-branch --no-tags aosp-clang/aarch64-linux-android-4.9
+      
       - name: Setup kernel source
         uses: actions/checkout@v4
         with:
           repository: Aflaungos/android_kernel_samsung_m23xq
           ref: fourteen-BoostKernel
           path: kernel-source
-
-      - name: Setup submodules
-        run: git submodule update --init --recursive --depth 0
-        working-directory: kernel-source
-
+          
       - name: Checkout Anykernel
         uses: actions/checkout@v4
         with:
+          fetch-depth: 0
           submodules: true
           repository: Aflaungos/AnyKernel3
           ref: m23xq
-          path: anykernel
-
-      - name: Adjust file permissions
-        working-directory: kernel-source
-        run: |
-          chmod a+x $GITHUB_WORKSPACE/Clang-10.0.0/clang/bin/clang
-
-      - name: Set build parameters
-        working-directory: kernel-source
-        run: |
-          CLANG="$GITHUB_WORKSPACE/Clang-10.0.0/bin"
-          GCC64="$GITHUB_WORKSPACE/Clang-10.0.0/aarch64-linux-android-4.9/bin"
-          PATH=$CLANG:$GCC64:$PATH
-          export PATH
-          export ARCH=arm64
-          export PROJECT_NAME=m23xq
-          export KERNEL_LLVM_BIN=clang
-          export DTC_EXT="$GITHUB_WORKSPACE/kernel-source/tools/dtc"
-          export KERNEL_MAKE_ENV=$DTC_EXT
-          export CLANG_TRIPLE=aarch64-linux-gnu-
-          export BUILD_CROSS_COMPILE=aarch64-linux-android-
-          output_dir=out
-
-      - name: Debug paths
-        run: |
-          echo "KERNEL_LLVM_BIN is $KERNEL_LLVM_BIN"
-          echo "BUILD_CROSS_COMPILE is $BUILD_CROSS_COMPILE"
-          echo "KERNEL_MAKE_ENV is $KERNEL_MAKE_ENV"
-          echo "PROJECT_NAME is $PROJECT_NAME"
-          echo "CLANG_TRIPLE is $CLANG_TRIPLE"
+          path: anykernel     
+          
+      - name: Setup Ccache
+        uses: hendrikmuhs/ccache-action@v1.2
+        with:
+          key: Build-KernelSU-${{ matrix.device }}
+          save: ${{ github.event_name != 'pull_request' }}
+          max-size: 2G
           
       - name: Build Kernel
         working-directory: kernel-source
         run: |
-          make -j$(grep -c ^processor /proc/cpuinfo) -C $(pwd) O=$(pwd)/out $KERNEL_MAKE_ENV ARCH=arm64 CROSS_COMPILE=$BUILD_CROSS_COMPILE REAL_CC=$KERNEL_LLVM_BIN CLANG_TRIPLE=$CLANG_TRIPLE CONFIG_SECTION_MISMATCH_WARN_ONLY=y vendor/m23xq_eur_open_defconfig --no-print-directory
-          make -j$(grep -c ^processor /proc/cpuinfo) -C $(pwd) O=$(pwd)/out $KERNEL_MAKE_ENV ARCH=arm64 CROSS_COMPILE=$BUILD_CROSS_COMPILE REAL_CC=$KERNEL_LLVM_BIN CLANG_TRIPLE=$CLANG_TRIPLE CONFIG_SECTION_MISMATCH_WARN_ONLY=y --no-print-directory
-          $(pwd)/tools/mkdtimg create $(pwd)/out/arch/arm64/boot/dtbo.img --page_size=4096 $(find out/arch/arm64/boot/dts/samsung/m23/m23xq/ -name *.dtbo)
+          CLANG="$GITHUB_WORKSPACE/aosp-clang/clang/bin"
+          GCC64="$GITHUB_WORKSPACE/aosp-clang/aarch64-linux-android-4.9/bin"
+          PATH=$CLANG:$GCC64:$PATH
+          export PATH
+          export ARCH=arm64
+          export CLANG_TRIPLE=aarch64-linux-gnu
+          export CROSS_COMPILE=aarch64-linux-android-
+          output_dir=out
+          date=$(date +"%Y%m%d%H%M")
+          export PATH="/usr/lib/ccache:$PATH"
+          echo "date=$date" >> $GITHUB_ENV
+          echo "Building kernel with $args"  
+          make -C $(pwd) O=out CC="ccache clang" vendor/m23xq_eur_open_defconfig && make O=out CC="ccache clang" -j$(grep -c ^processor /proc/cpuinfo)
           
       - name: Upload BoostKernel-${{ matrix.device }}
         uses: actions/upload-artifact@v3
@@ -100,7 +89,7 @@ jobs:
         working-directory: anykernel
         run: |
           cp -f $GITHUB_WORKSPACE/kernel-source/out/arch/arm64/boot/Image .
-          ZIP_NAME="BoostKernel-KernelSU-${{ matrix.device }}"
+          ZIP_NAME="Kernel-${{ matrix.device }}"
           echo "ZIP_NAME=$ZIP_NAME" >> $GITHUB_ENV
           zip -r "$ZIP_NAME.zip" *
           mv "$ZIP_NAME.zip" $GITHUB_WORKSPACE
@@ -114,7 +103,7 @@ jobs:
       - name: Creating Config Info
         run: |
           echo "
-          Works on Stock/GSIs/Roms
+          For Samsung Galaxy M23/F23 5G (m23xq)
           " >> INFO.txt
       
       - name: Release
@@ -126,6 +115,7 @@ jobs:
           files: |
             kernel-source/out/arch/arm64/boot/*
             ${{ env.ZIP_NAME }}.zip
+          tag_name: ${{ github.run_number }}-${{ github.ref }}-${{ matrix.device }}
           
       - name: Delete workflow runs
         uses: Mattraks/delete-workflow-runs@v2
