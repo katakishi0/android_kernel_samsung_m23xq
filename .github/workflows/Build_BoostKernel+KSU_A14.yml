@@ -23,8 +23,15 @@ jobs:
           sudo apt-get install -y lld binutils clang llvm zip flex bison libncurses-dev gawk  libiberty-dev autoconf kmod bc build-essential gcc libc6 curl libstdc++6 git wget libssl-dev cpio p7zip-full ccache
           sudo apt clean
           
-      - name: Checkout
+      - name: Setup kernel source
         uses: actions/checkout@v4
+        with:
+          repository: Aflaungos/android_kernel_samsung_m23xq
+          ref: fourteen-BoostKernel
+          path: kernel-source
+
+      - name: Setup submodules
+        run: git submodule update --init --recursive --depth 0
         
       - name: Cache Build Tools
         id: cache-aosp-clang
@@ -38,13 +45,6 @@ jobs:
         run: |
           git clone https://github.com/crdroidandroid/android_prebuilts_clang_host_linux-x86_clang-6032204 --depth=1 --single-branch --no-tags aosp-clang/clang
           git clone https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9 -b android-14.0.0_r0.47 --depth=1 --single-branch --no-tags aosp-clang/aarch64-linux-android-4.9
-      
-      - name: Setup kernel source
-        uses: actions/checkout@v4
-        with:
-          repository: Aflaungos/android_kernel_samsung_m23xq
-          ref: fourteen-BoostKernel
-          path: kernel-source
           
       - name: Checkout Anykernel
         uses: actions/checkout@v4
