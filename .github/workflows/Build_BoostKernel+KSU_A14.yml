@@ -103,7 +103,7 @@ jobs:
           
       - name: Creating Config Info
         run: |
-          ksu_version=$(git -C KernelSU rev-parse --short HEAD)
+          export ksu_version=$(git -C $GITHUB_WORKSPACE/kernel-source/KernelSU rev-parse --short HEAD)
           echo "
           For Samsung Galaxy M23/F23 5G (m23xq)
           " >> INFO.txt
