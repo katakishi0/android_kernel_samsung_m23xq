@@ -125,7 +125,7 @@ jobs:
           token: ${{ secrets.BOT_TOKEN }}
           message: |
             Download the latest BoostKernel update for Samsung Galaxy M23!
-            New KernelSU Update! ${{ env.latest_shortversion }}
+            New KernelSU Update! ${{ env.ksu_version }}
             
             DOWNLOAD: https://github.com/${{ github.repository }}/releases/
           
