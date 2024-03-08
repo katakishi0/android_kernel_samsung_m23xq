@@ -118,17 +118,6 @@ jobs:
             ${{ env.ZIP_NAME }}.zip
           tag_name: ${{ github.run_number }}-${{ github.ref }}-${{ matrix.device }}
 
-      - name: Start NotifierBot M23
-        uses: appleboy/telegram-action@master
-        with:
-          to: ${{ secrets.CHAT_ID_M23 }}
-          token: ${{ secrets.BOT_TOKEN }}
-          message: |
-            Download the latest BoostKernel update for Samsung Galaxy M23!
-            New KernelSU Update! ${{ env.ksu_version }}
-            
-            DOWNLOAD: https://github.com/${{ github.repository }}/releases/
-
       - name: Start NotifierBot F23
         uses: appleboy/telegram-action@master
         with:
@@ -136,6 +125,17 @@ jobs:
           token: ${{ secrets.BOT_TOKEN }}
           message: |
             Download the latest BoostKernel update for Samsung Galaxy F23!
+            New KernelSU Update! ${{ env.ksu_version }}
+            
+            DOWNLOAD: https://github.com/${{ github.repository }}/releases/
+
+      - name: Start NotifierBot M23
+        uses: appleboy/telegram-action@master
+        with:
+          to: ${{ secrets.CHAT_ID_M23 }}
+          token: ${{ secrets.BOT_TOKEN }}
+          message: |
+            Download the latest BoostKernel update for Samsung Galaxy M23!
             New KernelSU Update! ${{ env.ksu_version }}
             
             DOWNLOAD: https://github.com/${{ github.repository }}/releases/
