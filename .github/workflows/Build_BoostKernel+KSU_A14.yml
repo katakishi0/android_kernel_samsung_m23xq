@@ -103,6 +103,7 @@ jobs:
           
       - name: Creating Config Info
         run: |
+          ksu_version=$(git -C KernelSU rev-parse --short HEAD)
           echo "
           For Samsung Galaxy M23/F23 5G (m23xq)
           " >> INFO.txt
@@ -114,7 +115,6 @@ jobs:
           name: "BoostKernel For ${{ matrix.device }}"
           body_path: "INFO.txt"
           files: |
-            kernel-source/out/arch/arm64/boot/*
             ${{ env.ZIP_NAME }}.zip
           tag_name: ${{ github.run_number }}-${{ github.ref }}-${{ matrix.device }}
 
@@ -125,7 +125,7 @@ jobs:
           token: ${{ secrets.BOT_TOKEN }}
           message: |
             Download the latest BoostKernel update for Samsung Galaxy M23!
-            New KernelSU Update! $(git -C path/to/submodule rev-parse --short HEAD)
+            New KernelSU Update! ${{ env.latest_shortversion }}
             
             DOWNLOAD: https://github.com/${{ github.repository }}/releases/
           
