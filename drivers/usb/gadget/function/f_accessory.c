@@ -316,7 +316,7 @@ static struct usb_request *req_get(struct acc_dev *dev, struct list_head *head)
 
 static void acc_set_disconnected(struct acc_dev *dev)
 {
-]	dev->disconnected = -1;
+	dev->disconnected = -1;
 }
 
 static void acc_complete_in(struct usb_ep *ep, struct usb_request *req)
