@@ -67,7 +67,6 @@ jobs:
           CLANG="$GITHUB_WORKSPACE/aosp-clang/clang/bin"
           export PATH=$CLANG:$PATH
           export ARCH=arm64
-          export CLANG_TRIPLE=aarch64-linux-gnu-
           output_dir=out
           date=$(date +"%Y%m%d%H%M")
           export PATH="/usr/lib/ccache:$PATH"
