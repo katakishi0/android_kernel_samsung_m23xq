@@ -23,7 +23,7 @@ jobs:
         NAME: ClangKernel
       with:
         arch: arm64
-        compiler: clang/14
+        compiler: aosp-clang/main/clang-r487747c/
         KERNEL_PATH: kernel-source
         defconfig: vendor/m23xq_eur_open_defconfig
         image: Image
@@ -33,6 +33,5 @@ jobs:
       with:
           name: "Kernel For Galaxy M23"
           files: |
-            $GITHUB_WORKSPACE/kernel-source/out/arch/arm64/boot/*
             ${{ env.ZIP_NAME }}.zip
           tag_name: Galaxy_M23
