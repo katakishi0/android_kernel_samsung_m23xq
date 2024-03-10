@@ -5,8 +5,6 @@ ifeq ($(CONFIG_SND_SOC_TFA9878),m)
 TFA_KERNEL_MODULE        =1
 endif
 
-ccflags-y		+= $(call cc-disable-warning, enum-conversion)
-
 TFA_DEBUG                =1
 TFADSP_DEBUG             =1
 TFA_VERSION              =tfa9878
@@ -74,7 +72,7 @@ endif
 
 # cc flags
 #ccflags-y              := -DDEBUG
-# ccflags-y               += -Werror
+ccflags-y               += -Werror
 ifdef TFA_DEBUG
 ccflags-y               += -DTFA_DEBUG
 endif
