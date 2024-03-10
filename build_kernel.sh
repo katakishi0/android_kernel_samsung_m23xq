@@ -2,7 +2,7 @@
 
 export ARCH=arm64
 export PROJECT_NAME=m23xq
-export CLANG="${HOME}/linux-x86-main/clang-r487747c/bin"
+CLANG="${HOME}/linux-x86-main/clang-r487747c/bin"
 export PATH="$CLANG:$PATH"
 
 make O=out ARCH=arm64 SUBARCH=arm64 CC=clang LLVM_IAS=1 LLVM=1 vendor/m23xq_eur_open_defconfig
