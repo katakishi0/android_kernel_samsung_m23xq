@@ -129,16 +129,16 @@ jobs:
             
             DOWNLOAD: https://github.com/${{ github.repository }}/releases/
 
-      - name: Start NotifierBot M23
-        uses: appleboy/telegram-action@master
-        with:
-          to: ${{ secrets.CHAT_ID_M23 }}
-          token: ${{ secrets.BOT_TOKEN }}
-          message: |
-            Download the latest BoostKernel update for Samsung Galaxy M23!
-            New KernelSU Update! ${{ env.ksu_version }}
-            
-            DOWNLOAD: https://github.com/${{ github.repository }}/releases/
+#      - name: Start NotifierBot M23
+#        uses: appleboy/telegram-action@master
+#        with:
+#          to: ${{ secrets.CHAT_ID_M23 }}
+#          token: ${{ secrets.BOT_TOKEN }}
+#          message: |
+#            Download the latest BoostKernel update for Samsung Galaxy M23!
+#            New KernelSU Update! ${{ env.ksu_version }}
+#            
+#            DOWNLOAD: https://github.com/${{ github.repository }}/releases/
           
       - name: Delete workflow runs
         uses: Mattraks/delete-workflow-runs@v2
