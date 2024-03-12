@@ -1,4 +1,4 @@
-name: Build BoostKernel A14 with KernelSU
+name: Build Kernelsu
 on:
   workflow_dispatch:
   schedule:
@@ -7,7 +7,7 @@ jobs:
   build:
     strategy:
       matrix:
-        device: [m23xq]
+        device: [channel]
         
     name: Build Kernel For ${{ matrix.device }}
     runs-on: ubuntu-latest
@@ -51,8 +51,8 @@ jobs:
         with:
           fetch-depth: 0
           submodules: true
-          repository: Aflaungos/AnyKernel3
-          ref: m23xq
+          repository: katakishi0/AnyKernel3
+          ref: channel
           path: anykernel     
           
       - name: Setup Ccache
